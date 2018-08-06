@@ -21,9 +21,9 @@
     data() {
       return {
         debug: true,
-        gamesBackgrounds,
+        gamesBackgrounds
       };
-    },
+    }
   };
 </script>
 

@@ -3,31 +3,32 @@
         <navbar></navbar>
         <b-container class="mainContainer">
             <b-row>
-                <b-col v-if="userIDTrue" md="9" class="set-user">
+                <b-col v-if="userIDTrue" class="set-user">
                     <span>ETH Account number: {{ userID }}</span>
+                    <span><a v-bind:href="getTransactionsHistoryUrl()" target="_blank">Transactions History</a></span>
                 </b-col>
             </b-row>
             <b-row v-if="userIDTrue" class="mainContent">
                 <b-col class="userData" md="5">
                     <h5>YOUR ACCOUNT</h5>
                     <p>JOY: <span id="userBalanceWorld">{{ userBalanceWorld }}</span></p>
-                    <p>Casino Balance: <span id="userBalancePlatform">{{ userBalancePlatform }}</span></p>
+                    <p>Casino Balance: <span id="userBalancePlatform">{{ userBalancePlatform }}</span><span v-if="transferBalanceInProgress" class="transactionInProgress">Updating balance</span></p>
                     <p>Game Lobby Balance: <span id="userBalanceGameSession">{{ userBalanceGameSession }}</span></p>
                     <div class="denominationContainer"><span class="active">uCoins</span> | <span>mCoins</span></div>
                 </b-col>
                 <b-col md="7" class="transferBalanceContainter">
                     <div class="transferBalance" v-if="(parseInt(userBalanceWorld, 10) !== 0) || (parseInt(userBalancePlatform, 10) !== 0)">
-                        <h5>TRANSACTIONS</h5>
-                        <div v-if="isMetaMask" class="depWithButtonContainer">
+                        <h5>TRANSACTIONS</h5> <div  v-if="tranasctionMinedTxHash" class="transactionStatusLinkContainer"><a v-bind:href="getLastTransactionStatusUrl()" target="_blank">Last Transaction Status</a></div>
+                        <div v-if="isMetaMask" v-bind:class="{ depWithButtonContainer: isMetaMask, opacityTransfer:  transferBalanceInProgress}">
                             <b-card no-body>
                                 <b-tabs pills card>
-                                    <b-tab :disabled="parseInt(userBalanceWorld, 10) === 0" title="Deposit Tokens" button-id="depositButton">
+                                    <b-tab :disabled="parseInt(userBalanceWorld, 10) === 0 || transferBalanceInProgress" title="Deposit Tokens" button-id="depositButton">
                                         <b-form-input v-model="tokensToSendDeposit" type="text" placeholder="Deposit" class="inputTextDeposit"></b-form-input>
-                                        <b-btn v-on:click="sendTokensToCasino()" class="makeDepositButton">Deposit</b-btn>
+                                        <b-btn v-on:click="!transferBalanceInProgress && sendTokensToCasino()" class="makeDepositButton">Deposit</b-btn>
                                     </b-tab>
-                                    <b-tab :disabled="parseInt(userBalancePlatform, 10) === 0" title="Withdrawal Tokens" button-id="withdrawalButton">
+                                    <b-tab :disabled="parseInt(userBalancePlatform, 10) === 0 || transferBalanceInProgress" title="Withdrawal Tokens" button-id="withdrawalButton">
                                         <b-form-input v-model="tokensToSendWithdrawal" type="text" placeholder="Withdrawal" class="withdrawalTextDeposit"></b-form-input>
-                                        <b-btn v-on:click="sendTokensFromCasino()" class="makeWithdrawalButton">Withdrawal</b-btn>
+                                        <b-btn v-on:click="!transferBalanceInProgress && sendTokensFromCasino()" class="makeWithdrawalButton">Withdrawal</b-btn>
                                     </b-tab>
                                 </b-tabs>
                             </b-card>
@@ -57,7 +58,11 @@
                 <b-col md="10" class="doubleUpGameContainerTMP">
                     <div class="doubleUpGameTMP" :style='{ backgroundImage: "url(" + gamesBackgrounds("./doubleup_bg.png") + ")" }'>
                         <h1>Double Up!</h1>
-                        <a href="/#/DoubleUp" target="_blank"></a>
+                        <a onclick="window.open('./#/DoubleUp',
+                           'newwindow',
+                           'width=960,height=640');
+                          return false;">
+                        </a>
                     </div>
                 </b-col>
                 <div class="inProgressBackground" v-if="transferPendingBackground">
@@ -192,6 +197,8 @@
         gamesBackgrounds,
         loginPopup: false,
         progressBarAnimationInterval: {},
+        tranasctionMinedTxHash: null,
+        transferBalanceInProgress: false
       };
     },
     mounted() {
@@ -218,6 +225,7 @@
           this.userBalanceGameSession = event.balance /
             helper.data.config.userBalanceGameSessionDenomination;
         }
+        this.transferBalanceInProgress = false;
       });
       helper.data.bus.$on('isSessionOpen_RES', (event) => {
         this.isGameSession = event;
@@ -243,6 +251,17 @@
       helper.data.bus.$on('loginPopup', (event) => {
         this.loginPopup = event;
       });
+      helper.data.bus.$on('tranasctionMinedTxHash', (event) => {
+        this.tranasctionMinedTxHash = event;
+      });
+      helper.data.bus.$on('balanceTransferInProcess', (event) => {
+        if (!event) {
+          this.getBalance();
+        } else {
+          this.transferBalanceInProgress = event;
+        }
+      });
+
       if (typeof window.web3 !== 'undefined') {
         this.isMetaMask = true;
       }
@@ -255,6 +274,8 @@
       helper.data.bus.$off('confNum');
       helper.data.bus.$off('startGame_NOTIFY');
       helper.data.bus.$off('loginPopup');
+      helper.data.bus.$off('tranasctionMinedTxHash');
+      helper.data.bus.$off('balanceTransferInProcess');
     },
     methods: {
       // ............................ User functions (ID, Balances) ........
@@ -264,7 +285,7 @@
         helper.methods.setUserID(userID);
         this.loginPopup = false;
       },
-      getBalance(userID) {
+      getBalance(userID = this.userID) {
         helper.methods.sendRequestCommand('getBalance', { getBalanceId: userID, getBalanceCurrency: 'JoyToken', location: 'world' });
         helper.methods.sendRequestCommand('getBalance', { getBalanceId: userID, getBalanceCurrency: 'JoyToken', location: 'platform' });
         helper.methods.sendRequestCommand('getBalance', { getBalanceId: userID, getBalanceCurrency: 'JoyToken', location: 'gameSession' });
@@ -335,7 +356,15 @@
           }
         }, 1000);
       },
-    },
+
+      getLastTransactionStatusUrl() {
+        return `https://ropsten.etherscan.io/tx/${this.tranasctionMinedTxHash}`;
+      },
+
+      getTransactionsHistoryUrl() {
+        return `https://ropsten.etherscan.io/address/${this.userID}`;
+      }
+    }
   };
 </script>
 

@@ -11,17 +11,17 @@ export default new Router({
     {
       path: '/debug',
       name: 'Debug',
-      component: Debug,
+      component: Debug
     },
     {
       path: '/',
       name: 'MainPage',
-      component: MainPage,
+      component: MainPage
     },
     {
       path: '/DoubleUp',
       name: 'Double Up',
-      component: DoubleUpGame,
-    },
-  ],
+      component: DoubleUpGame
+    }
+  ]
 });

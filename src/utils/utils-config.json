@@ -1,7 +1,7 @@
 {
-  "serverURL": "ws://192.168.1.224:38010/platform",
-  "doubleUpPort": "38222/demo",
-  "doubleUpServer": "192.168.1.124",
+  "serverURL": "ws://35.153.30.160:50000/platform",
+  "doubleUpPort": "60000",
+  "doubleUpServer": "52.22.73.191",
   "tokenName": "JoyToken",
   "numberOfConfirmations": 5,
   "userBalanceGameSessionDenomination": 100

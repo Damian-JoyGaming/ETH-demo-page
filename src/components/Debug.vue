@@ -87,11 +87,11 @@
             value: null,
             text: 'Choose unit',
             disabled: true,
-            slot: 'first',
+            slot: 'first'
           },
           { value: 'Eth', text: 'Eth' },
           { value: 'Wei', text: 'Wei' },
-          { value: 'JoyAsset', text: 'JoyAsset' }],
+          { value: 'JoyAsset', text: 'JoyAsset' }]
       };
     },
     mounted() {
@@ -149,8 +149,8 @@
             ourThis.returnConsole += e;
           }
         };
-      },
-    },
+      }
+    }
   };
 </script>
 

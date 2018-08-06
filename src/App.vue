@@ -15,7 +15,7 @@
       if (Cookies.get('JoyCoinUserId')) {
         helper.methods.setUserID(Cookies.get('JoyCoinUserId'));
       }
-    },
+    }
   };
 </script>
 

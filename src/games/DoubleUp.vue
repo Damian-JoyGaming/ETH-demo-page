@@ -12,13 +12,13 @@
     data() {
       return {
         doubleUpData: {},
-        doubleUpURL: '',
+        doubleUpURL: ''
       };
     },
     beforeMount() {
       this.doubleUpData = helper.methods.getGamesParameters();
       this.doubleUpURL = `http://192.168.1.24/DoubleUp/master/?userId=${this.doubleUpData.userID}&currency=${this.doubleUpData.tokenName}&port=${this.doubleUpData.doubleUpPort}&server=${this.doubleUpData.doubleUpServer}`;
-    },
+    }
   };
 </script>
 

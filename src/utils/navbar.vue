@@ -36,7 +36,7 @@
       return {
         wsStatus: '',
         reconnectButton: true,
-        userIDStatus: '',
+        userIDStatus: ''
       };
     },
     mounted() {
@@ -69,8 +69,8 @@
       },
       login() {
         helper.data.bus.$emit('loginPopup', true);
-      },
-    },
+      }
+    }
   };
 </script>
 

@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import * as Cookies from 'tiny-cookie';
+import {web3WaitForBlocksChanged, web3TokenContractTransfer, web3DepositContractPayOut, web3GetTransactionReceipt} from './web3Services';
 import config from './utils-config.json';
-import contractConfig from './config.json';
 
 // let ws = new WebSocket('ws://192.168.1.207:8010/platform');
 let ws = new WebSocket(config.serverURL);
@@ -13,6 +13,9 @@ const bus = new Vue();
 let globalUserID = '';
 let globalDepositAddress = '';
 let globalTokenAddress = '';
+let lastTransactionId = '';
+let transactionStatusTimerId = null;
+const actionsTransferList = [];
 
 // Create listiner at websocket to get messages
 ws.onmessage = function (event) {
@@ -43,7 +46,7 @@ ws.onmessage = function (event) {
       case 'subscribeBlocks_RES':
         bus.$emit('subscribeBlocks_RES', {
           blockNumber: JSON.parse(parsedEvent.data).number,
-          blockData: JSON.parse(parsedEvent.data),
+          blockData: JSON.parse(parsedEvent.data)
         });
         break;
       // Check if block are sync (unuse)
@@ -56,12 +59,14 @@ ws.onmessage = function (event) {
       case 'getDepositAddress_RES':
         if (parsedEvent.status === 0) {
           globalDepositAddress = parsedEvent.data;
+          executeAllTransferActions();
         }
         break;
       // Get token address
       case 'getTokenAddress_RES':
         if (parsedEvent.status === 0) {
           globalTokenAddress = parsedEvent.data;
+          executeAllTransferActions();
         }
         break;
       // Check if Game Session is open
@@ -96,7 +101,7 @@ export default {
     bus,
     userID: globalUserID,
     isUserIDSet: false,
-    config,
+    config
   },
   methods: {
     // ............................ WebSockets Utils ...................
@@ -133,83 +138,80 @@ export default {
       ws = new WebSocket(config.serverURL);
     },
     // ............................ Tokens Utils .....................
-    // Generate the Contract object (to send tokens)
-    // eslint-disable-next-line consistent-return
-    getTokenContract() {
-      if (typeof window.web3 !== 'undefined') {
-        // eslint-disable-next-line no-undef
-        const CONTRACT = web3.eth.contract(contractConfig.JoyToken.abi)
-          .at(globalTokenAddress, (err, ctr) => ctr);
-        return CONTRACT;
-      }
-    },
-    // eslint-disable-next-line consistent-return
-    getDepositContract() {
-      if (typeof window.web3 !== 'undefined') {
-        // eslint-disable-next-line no-undef
-        const CONTRACT = web3.eth.contract(contractConfig.PlatformDeposit.abi)
-          .at(globalDepositAddress, (err, ctr) => ctr);
-        return CONTRACT;
-      }
-    },
     // Transfer tokens to casino (userID, number of tokens to send)
     transferToCasino(userID, tokensToSend) {
-      this.sendRequest('getDepositAddress');
-      this.sendRequest('getTokenAddress');
-      // eslint-disable-next-line consistent-return
-      const getDepositAddressInterval = setInterval(() => {
-        if (globalDepositAddress !== '' && globalTokenAddress !== '') {
-          clearInterval(getDepositAddressInterval);
-          // eslint-disable-next-line no-unused-vars
-          this.getTokenContract().transfer(globalDepositAddress, tokensToSend, (err, res) => {
-            if (!err) {
-              // const pendingTransactionInterval = setInterval(() => {
-              // axios.get(`https://api.etherscan.io/api?module=transaction&action=getstatus&txhash=${res}&apikey=${this.etherscan}`)
-              // .then((response) => {
-              // console.log(response);
-              // });
-              // clearInterval(pendingTransactionInterval);
-              // console.log('tick interval');
-              // }, 1000);
-            }
-            console.log(err);
-          });
-        }
-      }, 100);
+      const transfer = async () => {
+        const response = await web3TokenContractTransfer(globalDepositAddress, globalTokenAddress, tokensToSend);
+        this.transactionResponsePreparation(response);
+      };
+
+      actionsTransferList.push(transfer);
+      this.proxyGenerateTransferActions();
     },
+
     transferFromCasino(userID, tokensToSend) {
-      this.sendRequest('getDepositAddress');
-      this.sendRequest('getTokenAddress');
-      // eslint-disable-next-line consistent-return
-      const getDepositAddressInterval = setInterval(() => {
-        if (globalDepositAddress !== '' && globalTokenAddress !== '') {
-          clearInterval(getDepositAddressInterval);
-          // eslint-disable-next-line no-unused-vars
-          this.getDepositContract().payOut(userID, tokensToSend, (err, res) => {
-            if (!err) {
-              // const pendingTransactionInterval = setInterval(() => {
-              // axios.get(`https://api.etherscan.io/api?module=transaction&action=getstatus&txhash=${res}&apikey=${this.etherscan}`)
-              // .then((response) => {
-              // console.log(response);
-              // });
-              // clearInterval(pendingTransactionInterval);
-              // console.log('tick interval');
-              // }, 1000);
-              console.log(res);
-              if (typeof window.web3 !== 'undefined') {
-                // eslint-disable-next-line no-undef
-                console.log(`res: ${res}`);
-                window.web3.eth
-                  .getTransaction(res, (getTransactionErr, getTransactionRes) => {
-                    console.log(`getTransactionRes: ${JSON.stringify(getTransactionRes)}`);
-                  });
-              }
-            } else {
-              console.log(err);
-            }
-          });
+      const transfer = async () => {
+        const response = await web3DepositContractPayOut(globalDepositAddress, userID, tokensToSend);
+        this.transactionResponsePreparation(response);
+      };
+
+      actionsTransferList.push(transfer);
+      this.proxyGenerateTransferActions();
+    },
+
+    transactionResponsePreparation(response) {
+      bus.$emit('tranasctionMinedTxHash', response);
+      lastTransactionId = response;
+      this.checkBaseTransferStatus();
+    },
+
+    proxyGenerateTransferActions() {
+      generateTransfersActions = generateTransfersActions.bind(this);
+      executeAllTransferActions();
+    },
+
+    checkBaseTransferStatus() {
+      if (transactionStatusTimerId) {
+        clearTimeout(transactionStatusTimerId);
+      } else {
+        bus.$emit('balanceTransferInProcess', true);
+      }
+
+      transactionStatusTimerId = setTimeout(async () => {
+        const response = await web3GetTransactionReceipt(lastTransactionId);
+        if (!response) {
+          this.checkBaseTransferStatus();
+        } else {
+          transactionStatusTimerId = null;
+          this.transferCompleteVerification(response);
         }
-      }, 100);
+      }, 10000);
+    },
+
+    async transferCompleteVerification(transactionReceipt = {}) {
+      const {blockHash, blockNumber, status, transactionHash} = transactionReceipt;
+      if (!status) {
+        bus.$emit('balanceTransferInProcess', false);
+        console.error('Transaction FAILED');
+        return false;
+      }
+
+      const blockUpdatesResult = await web3WaitForBlocksChanged(config.numberOfConfirmations);
+      if (blockUpdatesResult) {
+        const transactionReceipt = await web3GetTransactionReceipt(transactionHash);
+        const {blockHash:blockHashReceipt, blockNumber:blockNumberReceipt, status:statusReceipt} = transactionReceipt;
+        if (statusReceipt !== status) {
+          bus.$emit('balanceTransferInProcess', false);
+          console.error('Transaction FAILED');
+          return false;
+        }
+        if (blockHash !== blockHashReceipt || blockNumber !== blockNumberReceipt) {
+          this.transferCompleteVerification(transactionReceipt);
+        } else {
+          bus.$emit('balanceTransferInProcess', false);
+        }
+      }
+
     },
     // ............................ Utils ...........................
     // Logout function - remove cookie and reloading a page
@@ -224,7 +226,7 @@ export default {
         userID: this.userID,
         tokenName: config.tokenName,
         doubleUpPort: config.doubleUpPort,
-        doubleUpServer: config.doubleUpServer,
+        doubleUpServer: config.doubleUpServer
       };
     },
     // ............................ Setters/Getters .................
@@ -247,6 +249,33 @@ export default {
     // Getter of Websocket status (true/false)
     getWSStatus() {
       return ws.readyState;
-    },
-  },
+    }
+  }
 };
+
+
+function* generateTransfersActions() {
+  if (!globalDepositAddress) {
+    yield this.sendRequest('getDepositAddress');
+  }
+
+  if (!globalTokenAddress) {
+    yield this.sendRequest('getTokenAddress');
+  }
+
+  if (globalTokenAddress && globalDepositAddress) {
+    while (actionsTransferList.length) {
+      yield actionsTransferList.shift();
+    }
+  }
+}
+
+function executeAllTransferActions() {
+  const generetedActions = generateTransfersActions();
+  // eslint-disable-next-line
+  for (const action of generetedActions) {
+    if (typeof action === 'function') {
+      action();
+    }
+  }
+}
