@@ -60,7 +60,7 @@
                         <h1>Double Up!</h1>
                         <a onclick="window.open('./#/DoubleUp',
                            'newwindow',
-                           'width=960,height=640');
+                           'width=960, height=640,menubar=no,toolbar=no,location=no,directories=no,status=no,scrollbars=no,resizable=no');
                           return false;">
                         </a>
                     </div>
