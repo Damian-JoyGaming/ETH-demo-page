@@ -56,9 +56,9 @@
                     </b-button>
                 </b-col>
                 <b-col md="10" class="doubleUpGameContainerTMP">
-                    <div class="doubleUpGameTMP" :style='{ backgroundImage: "url(" + gamesBackgrounds("./doubleup_bg.png") + ")" }'>
+                    <div v-bind:class="{doubleUpGameTMP: true, gamesAvailable: !!(userBalanceGameSession > 0)}" :style='{ backgroundImage: "url(" + gamesBackgrounds("./doubleup_bg.png") + ")" }'>
                         <h1>Double Up!</h1>
-                        <a onclick="window.open('./#/DoubleUp',
+                        <a v-if="userBalanceGameSession" onclick="window.open('./#/DoubleUp',
                            'newwindow',
                            'width=960, height=640,menubar=no,toolbar=no,location=no,directories=no,status=no,scrollbars=no,resizable=no');
                           return false;">
