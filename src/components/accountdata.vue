@@ -2,10 +2,11 @@
   <b-col class="userData" md="5">
     <h5>YOUR ACCOUNT</h5>
     <p>Wallet Balance: <span id="userBalanceWorld">{{ denominateBalance(userBalanceWorld, currentDenominationId) }} {{getDenominatedCurrency(currentDenominationId)}}</span></p>
-    <p>Casino Balance: <span id="userBalancePlatform">{{ denominateBalance(userBalancePlatform, currentDenominationId) }} {{getDenominatedCurrency(currentDenominationId)}}</span><span v-if="transferBalanceInProgress" class="transactionInProgress">Updating balance</span></p>
+    <p>Casino Balance: <span id="userBalancePlatform">{{ denominateBalance(userBalancePlatform, currentDenominationId) }} {{getDenominatedCurrency(currentDenominationId)}}</span></p>
     <p>Game Lobby Balance: <span id="userBalanceGameSession">{{ userBalanceGameSession }}</span></p>
     <p>Exchange Rate: <span id="exchangeRateContainer">100 attoJoy = <span id="exchangeRateValue">1</span></span></p>
     <div class="denominationContainer"><span :class="{active: isActiveDenominationControl('previous', currentDenominationId)}" v-on:click="isActiveDenominationControl('previous', currentDenominationId) && changeCurrentDenominationId(-1, currentDenominationId)">{{getDenominationControlName('previous', currentDenominationId)}}</span> | <span :class="{active: isActiveDenominationControl('next', currentDenominationId)}" v-on:click="isActiveDenominationControl('next', currentDenominationId) && changeCurrentDenominationId(1, currentDenominationId)">{{getDenominationControlName('next', currentDenominationId)}}</span></div>
+    <span v-if="transferBalanceInProgress" class="transactionInProgress">Updating balance</span>
   </b-col>
 </template>
 
@@ -18,7 +19,7 @@
     props: ['userBalanceWorld', 'userBalancePlatform', 'userBalanceGameSession', 'transferBalanceInProgress', 'currentDenominationId'],
     data() {
       return {
-        denominationList: ['a', 'f', 'p', 'n', 'u', 'm', 'k', 'M'],
+        denominationList: ['a', 'f', 'p', 'n', 'u', 'm', 'j', 'k', 'M'],
         denominationData: {
           a: Object.assign({}, baseDenominationObject, {previous:false, 'shortName': 'a', 'name': 'atto', decimal:1}),
           f: Object.assign({}, baseDenominationObject, {'shortName': 'f', 'name': 'femto', decimal: 1000}),
@@ -26,8 +27,9 @@
           n: Object.assign({}, baseDenominationObject, {'shortName': 'n', 'name': 'nano', decimal: 1000000000}),
           u: Object.assign({}, baseDenominationObject, {'shortName': 'u', 'name': 'micro', decimal: 1000000000000}),
           m: Object.assign({}, baseDenominationObject, {'shortName': 'm', 'name': 'milli', decimal: 1000000000000000}),
-          k: Object.assign({}, baseDenominationObject, {'shortName': 'k', 'name': 'kilo', decimal: 1000000000000000000}),
-          M: Object.assign({}, baseDenominationObject, {next:false, 'shortName': 'M', 'name': 'Mega', decimal: 1000000000000000000000})
+          j: Object.assign({}, baseDenominationObject, {'shortName': '', 'name': '', decimal: 1000000000000000000}),
+          k: Object.assign({}, baseDenominationObject, {'shortName': 'k', 'name': 'kilo', decimal: 1000000000000000000000}),
+          M: Object.assign({}, baseDenominationObject, {next:false, 'shortName': 'M', 'name': 'Mega', decimal: 1000000000000000000000000})
         }
       };
     },
