@@ -47,7 +47,8 @@ $secondary-darkPurple: #0d163a
     position: absolute
     top: 10px
     right: 10px
-    font-size: 10px
+    font-size: 12px
+    cursor: pointer
     .active
       color: $main-orange
   .transactionInProgress
@@ -227,11 +228,14 @@ $secondary-darkPurple: #0d163a
   align-items: center
   justify-content: center
   position: absolute
-  top: 0
+  top: 5vh
   left: 0
   width: 100%
-  height: 100%
+  height: 25vh
   background-color: rgba(255,255,255,0.7)
+  &.gameProgressSection
+    top: 0%
+    height: 100%
   .inProgressContent
     display: flex
     flex-direction: column
@@ -249,6 +253,10 @@ $secondary-darkPurple: #0d163a
       .progress-bar
         background-color: $main-orange
 #userBalanceGameSession
+  position: relative
+  &:after
+    +joytokenLogo(-7px, -23px, 30px, 20px, '../../assets/JoyToken_Icon.png')
+#exchangeRateValue
   position: relative
   &:after
     +joytokenLogo(-7px, -23px, 30px, 20px, '../../assets/JoyToken_Icon.png')
@@ -309,26 +317,26 @@ $secondary-darkPurple: #0d163a
       width: 50%
 .denominationTableContainer
   position: fixed
-  right: -27vh
+  right: -33vh
   top: 30vh
-  height: 30vh
+  height: 19vh
   transition: 0.2s
   &:hover
     right: 0
   .tableColumn
     background-color: $main-grey
     padding: 0 3px
+    text-align: center
     .header
       color: grey
       font-size: 14px
-      text-align: center
   .denominationHeader
     height: 30px
-    width: 30vh
+    width: 19vh
     background-color: #868e96
     transform: rotate(-90deg)
     text-align: right
-    transform-origin: 50% 492%
+    transform-origin: 50% 288%
     color: white
     border-radius: 0 30px 0 0
     padding-right: 20px

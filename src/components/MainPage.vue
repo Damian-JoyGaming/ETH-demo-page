@@ -9,37 +9,23 @@
                 </b-col>
             </b-row>
             <b-row v-if="userIDTrue" class="mainContent">
-                <b-col class="userData" md="5">
-                    <h5>YOUR ACCOUNT</h5>
-                    <p>JOY: <span id="userBalanceWorld">{{ userBalanceWorld }}</span></p>
-                    <p>Casino Balance: <span id="userBalancePlatform">{{ userBalancePlatform }}</span><span v-if="transferBalanceInProgress" class="transactionInProgress">Updating balance</span></p>
-                    <p>Game Lobby Balance: <span id="userBalanceGameSession">{{ userBalanceGameSession }}</span></p>
-                    <div class="denominationContainer"><span class="active">uCoins</span> | <span>mCoins</span></div>
-                </b-col>
-                <b-col md="7" class="transferBalanceContainter">
-                    <div class="transferBalance" v-if="(parseInt(userBalanceWorld, 10) !== 0) || (parseInt(userBalancePlatform, 10) !== 0)">
-                        <h5>TRANSACTIONS</h5> <div  v-if="tranasctionMinedTxHash" class="transactionStatusLinkContainer"><a v-bind:href="getLastTransactionStatusUrl()" target="_blank">Last Transaction Status</a></div>
-                        <div v-if="isMetaMask" v-bind:class="{ depWithButtonContainer: isMetaMask, opacityTransfer:  transferBalanceInProgress}">
-                            <b-card no-body>
-                                <b-tabs pills card>
-                                    <b-tab :disabled="parseInt(userBalanceWorld, 10) === 0 || transferBalanceInProgress" title="Deposit Tokens" button-id="depositButton">
-                                        <b-form-input v-model="tokensToSendDeposit" type="text" placeholder="Deposit" class="inputTextDeposit"></b-form-input>
-                                        <b-btn v-on:click="!transferBalanceInProgress && sendTokensToCasino()" class="makeDepositButton">Deposit</b-btn>
-                                    </b-tab>
-                                    <b-tab :disabled="parseInt(userBalancePlatform, 10) === 0 || transferBalanceInProgress" title="Withdrawal Tokens" button-id="withdrawalButton">
-                                        <b-form-input v-model="tokensToSendWithdrawal" type="text" placeholder="Withdrawal" class="withdrawalTextDeposit"></b-form-input>
-                                        <b-btn v-on:click="!transferBalanceInProgress && sendTokensFromCasino()" class="makeWithdrawalButton">Withdrawal</b-btn>
-                                    </b-tab>
-                                </b-tabs>
-                            </b-card>
-                        </div>
-                    </div>
-                    <div class="inProgressBackground" v-if="transferTokensPendingBackground">
-                        <div class="inProgressContent transferToken" v-if="transferTokensPending">
-                            <b-progress :value="numberOfConfirmations + 1" :max="numberOfConfirmations + 1" animated></b-progress>
-                        </div>
-                    </div>
-                </b-col>
+                <accountdata
+                  :userBalanceWorld="userBalanceWorld"
+                  :userBalancePlatform=userBalancePlatform
+                  :userBalanceGameSession=userBalanceGameSession
+                  :transferBalanceInProgress="transferBalanceInProgress"
+                  :currentDenominationId="currentDenominationId">
+                </accountdata>
+                <transaction
+                  :userID="userID"
+                  :componentVisible="(parseInt(userBalanceWorld, 10) !== 0) || (parseInt(userBalancePlatform, 10) !== 0)"
+                  :depositTabDisabled="parseInt(userBalanceWorld, 10) === 0"
+                  :withdrawalTabDisabled="parseInt(userBalancePlatform, 10) === 0"
+                  :isMetaMask="isMetaMask"
+                  :tranasctionMinedTxHash="tranasctionMinedTxHash"
+                  :transferBalanceInProgress="transferBalanceInProgress"
+                >
+                </transaction>
             </b-row>
             <b-row class="gameSession" v-if="(userIDTrue && ((parseFloat(userBalancePlatform).toFixed(2) > 0) || (parseFloat(userBalanceGameSession).toFixed(2) > 0)))">
                 <b-col md="6">
@@ -65,7 +51,7 @@
                         </a>
                     </div>
                 </b-col>
-                <div class="inProgressBackground" v-if="transferPendingBackground">
+                <div class="inProgressBackground gameProgressSection" v-if="transferPendingBackground">
                     <div class="inProgressContent" v-if="transferPending">
                         <b-progress :value="confNum" :max="numberOfConfirmations + 1" show-progress animated></b-progress>
                     </div>
@@ -74,81 +60,7 @@
         </b-container>
         <div class="footer">
         </div>
-        <div class="denominationTableContainer">
-            <div class="denominationHeader">
-                Denomination
-            </div>
-            <div class="denominationContent">
-                <div class="symbol tableColumn">
-                    <span class="header">SYMBOL</span>
-                    <div class="table">
-                        <span>Y</span>
-                        <span>Y</span>
-                        <span>Y</span>
-                        <span>Y</span>
-                        <span>Y</span>
-                        <span>Y</span>
-                        <span>Y</span>
-                        <span>Y</span>
-                        <span>Y</span>
-                        <span>Y</span>
-                        <span>Y</span>
-                        <span>Y</span>
-                    </div>
-                </div>
-                <div class="prefix tableColumn">
-                    <span class="header">PREFIX</span>
-                    <div class="table">
-                        <span>Yotta</span>
-                        <span>Yotta</span>
-                        <span>Yotta</span>
-                        <span>Yotta</span>
-                        <span>Yotta</span>
-                        <span>Yotta</span>
-                        <span>Yotta</span>
-                        <span>Yotta</span>
-                        <span>Yotta</span>
-                        <span>Yotta</span>
-                        <span>Yotta</span>
-                        <span>Yotta</span>
-                    </div>
-                </div>
-                <div class="10n tableColumn">
-                    <span class="header">10N</span>
-                    <div class="table">
-                        <span>10^24</span>
-                        <span>10^24</span>
-                        <span>10^24</span>
-                        <span>10^24</span>
-                        <span>10^24</span>
-                        <span>10^24</span>
-                        <span>10^24</span>
-                        <span>10^24</span>
-                        <span>10^24</span>
-                        <span>10^24</span>
-                        <span>10^24</span>
-                        <span>10^24</span>
-                    </div>
-                </div>
-                <div class="decimal tableColumn">
-                    <span class="header">DECIMAL</span>
-                    <div class="table">
-                        <span>1000000000000</span>
-                        <span>1000000000000</span>
-                        <span>1000000000000</span>
-                        <span>1000000000000</span>
-                        <span>1000000000000</span>
-                        <span>1000000000000</span>
-                        <span>1000000000000</span>
-                        <span>1000000000000</span>
-                        <span>1000000000000</span>
-                        <span>1000000000000</span>
-                        <span>1000000000000</span>
-                        <span>1000000000000</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <denomination></denomination>
         <div class="loginPopup" v-if="loginPopup">
             <div class="loginContent">
                 <h3>Login with</h3>
@@ -168,12 +80,15 @@
   import helper from '../utils/helper';
   import gamesComp from './Games';
   import navbar from '../utils/navbar';
+  import accountdata from './accountdata';
+  import transaction from './transaction';
+  import denomination from './denomination';
 
   const gamesBackgrounds = require.context('../assets/games', true, /\.(png|jpe?g|gif|svg)(\?.*)?$/);
 
   export default {
     name: 'MainPage',
-    components: { gamesComp, navbar },
+    components: { gamesComp, navbar, denomination, accountdata, transaction },
     data() {
       return {
         userID: helper.methods.getUserID(),
@@ -182,10 +97,6 @@
         userBalancePlatform: '',
         userBalanceGameSession: '',
         isMetaMask: false,
-        tokensToSendDeposit: '',
-        tokensToSendWithdrawal: '',
-        pendingTransaction: false,
-        transactionDone: false,
         gameSession: true,
         isGameSession: false,
         transferPendingBackground: false,
@@ -198,7 +109,8 @@
         loginPopup: false,
         progressBarAnimationInterval: {},
         tranasctionMinedTxHash: null,
-        transferBalanceInProgress: false
+        transferBalanceInProgress: false,
+        currentDenominationId: 0
       };
     },
     mounted() {
@@ -261,6 +173,10 @@
           this.transferBalanceInProgress = event;
         }
       });
+      helper.data.bus.$on('changeCurrentDenominationId', (event) => {
+        this.currentDenominationId = event;
+      });
+
 
       if (typeof window.web3 !== 'undefined') {
         this.isMetaMask = true;
@@ -276,6 +192,7 @@
       helper.data.bus.$off('loginPopup');
       helper.data.bus.$off('tranasctionMinedTxHash');
       helper.data.bus.$off('balanceTransferInProcess');
+      helper.data.bus.$off('changeCurrentDenominationId');
     },
     methods: {
       // ............................ User functions (ID, Balances) ........
@@ -294,42 +211,6 @@
         this.setUserID_req(window.web3.eth.coinbase);
         this.userID = window.web3.eth.coinbase;
       },
-      // ............................ Casino transfers .....................
-      sendTokensToCasino() {
-        // this.pendingTransaction = true;
-        helper.methods.transferToCasino(this.userID, this.tokensToSendDeposit);
-        // this.transferTokensPendingBackground = true;
-        // this.transferTokensPending = true;
-        // const oldUserBalancePlatfrom = this.userBalancePlatform;
-        // const transferTokenInterval = setInterval(() => {
-        //   helper.methods.sendRequestCommand('getBalance',
-        // { getBalanceId: this.userID, getBalanceCurrency: 'JoyToken', location: 'platform' });
-        //   if (oldUserBalancePlatfrom !== this.userBalancePlatform) {
-        //     clearInterval(transferTokenInterval);
-        //     this.transferTokensPendingBackground = false;
-        //     this.transferTokensPending = false;
-        //   }
-        // }, 1000);
-      },
-      sendTokensFromCasino() {
-        // this.pendingTransaction = true;
-        helper.methods.transferFromCasino(this.userID, this.tokensToSendWithdrawal);
-        // this.transferTokensPendingBackground = true;
-        // this.transferTokensPending = true;
-        // const oldUserBalancePlatfrom = this.userBalancePlatform;
-        // const transferTokenInterval = setInterval(() => {
-        //   console.log(`oldUserBalancePlatfrom: ${oldUserBalancePlatfrom}`);
-        //   console.log(`userBalancePlatform: ${this.userBalancePlatform}`);
-        //   helper.methods.sendRequestCommand('getBalance',
-        // { getBalanceId: this.userID, getBalanceCurrency: 'JoyToken', location: 'platform' });
-        //   if (oldUserBalancePlatfrom !== this.userBalancePlatform) {
-        //     clearInterval(transferTokenInterval);
-        //     this.transferTokensPendingBackground = false;
-        //     this.transferTokensPending = false;
-        //   }
-        // }, 1000);
-      },
-
       // ............................ Game Session functions ...............
       startGameSession() {
         this.transferPendingBackground = true;
@@ -355,10 +236,6 @@
             clearInterval(this.progressBarAnimationInterval);
           }
         }, 1000);
-      },
-
-      getLastTransactionStatusUrl() {
-        return `https://ropsten.etherscan.io/tx/${this.tranasctionMinedTxHash}`;
       },
 
       getTransactionsHistoryUrl() {
