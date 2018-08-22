@@ -14,7 +14,8 @@
                   :userBalancePlatform=userBalancePlatform
                   :userBalanceGameSession=userBalanceGameSession
                   :transferBalanceInProgress="transferBalanceInProgress"
-                  :currentDenominationId="currentDenominationId">
+                  :currentDenominationId="currentDenominationId"
+                >
                 </accountdata>
                 <transaction
                   :userID="userID"
@@ -24,6 +25,7 @@
                   :isMetaMask="isMetaMask"
                   :tranasctionMinedTxHash="tranasctionMinedTxHash"
                   :transferBalanceInProgress="transferBalanceInProgress"
+                  :currentDenominationId="currentDenominationId"
                 >
                 </transaction>
             </b-row>
