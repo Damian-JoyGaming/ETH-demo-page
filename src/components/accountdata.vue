@@ -16,7 +16,13 @@
 
   export default {
     name: 'accountdata',
-    props: ['userBalanceWorld', 'userBalancePlatform', 'userBalanceGameSession', 'transferBalanceInProgress', 'currentDenominationId'],
+    props: [
+      'userBalanceWorld',
+      'userBalancePlatform',
+      'userBalanceGameSession',
+      'transferBalanceInProgress',
+      'currentDenominationId'
+    ],
     data() {
       return {
 

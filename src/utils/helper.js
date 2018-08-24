@@ -78,6 +78,8 @@ ws.onmessage = function (event) {
       case 'endGame_NOTIFY':
       case 'startGame_NOTIFY':
         if (parsedEvent.status === 0) {
+          lastTransactionId = parsedEvent.txHash;
+          bus.$emit('tranasctionMinedTxHash', lastTransactionId);
           bus.$emit('transferPending', true);
         }
         break;
