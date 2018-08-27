@@ -40,6 +40,8 @@ ws.onmessage = function (event) {
         if (parsedEvent.status === 0) {
           bus.$emit('setUserID_RES', true);
           Cookies.set('JoyCoinUserId', globalUserID, 1);
+        } else {
+          bus.$emit('setUserID_RES', false);
         }
         break;
       // Subscribe latest block (unuse)

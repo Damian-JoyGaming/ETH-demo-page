@@ -65,7 +65,7 @@
   /* eslint-disable object-shorthand */
 
   import helper from '../utils/helper';
-  import navbar from '../utils/navbar';
+  import navbar from '../components/navbar';
 
   export default {
     name: 'hello',

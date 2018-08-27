@@ -19,9 +19,7 @@
       </div>
     </div>
     <div class="inProgressBackground" v-if="transferBalanceInProgress">
-      <!--<div class="inProgressContent transferToken" v-if="transferTokensPending">-->
-        <!--<b-progress :value="numberOfConfirmations + 1" :max="numberOfConfirmations + 1" animated></b-progress>-->
-      <!--</div>-->
+
     </div>
   </b-col>
 </template>

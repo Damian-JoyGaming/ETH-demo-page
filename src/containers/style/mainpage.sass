@@ -187,7 +187,6 @@ $secondary-darkPurple: #0d163a
       justify-content: center
       align-items: center
       min-height: 300px
-      cursor: pointer
       transition: all 0.2s
       background-size: 100%
       background-position: center center
@@ -205,6 +204,7 @@ $secondary-darkPurple: #0d163a
         color: #FFF
         text-shadow: 4px 4px 2px rgba(150, 150, 150, 1)
       &.gamesAvailable
+        cursor: pointer
         &:hover
           background-size: 103%
           filter: grayscale(0%)
@@ -286,6 +286,27 @@ $secondary-darkPurple: #0d163a
     span
       &:after
         +joytokenLogo(0px, 5px, 40px, 30px, '../../assets/JoyToken_Icon.png')
+.initApp
+  position: absolute
+  top: 0
+  left: 0
+  width: 100vw
+  height: 100vh
+  background-color: rgba(255,255,255,0.6)
+  display: flex
+  justify-content: center
+  align-items: center
+  &:after
+    width: 32px
+    height: 32px
+    content: ''
+    display: inline-block
+    margin-left: 6px
+    background-image: url('../../assets/bigloader.gif')
+    background-size: 100%
+    background-position: center center
+    background-repeat: no-repeat
+    vertical-align: middle
 .loginPopup
   position: absolute
   top: 0
@@ -322,7 +343,7 @@ $secondary-darkPurple: #0d163a
       width: 50%
 .denominationTableContainer
   position: fixed
-  right: -33vh
+  right: -34vh
   top: 30vh
   height: 19vh
   transition: 0.2s

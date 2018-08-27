@@ -29,36 +29,16 @@
                 >
                 </transaction>
             </b-row>
-            <b-row class="gameSession" v-if="(userIDTrue && ((parseFloat(userBalancePlatform).toFixed(2) > 0) || (parseFloat(userBalanceGameSession).toFixed(2) > 0)))">
-                <b-col md="6">
-                    <span class="gameLobbyHeader">Game Lobby</span>
-                </b-col>
-            </b-row>
-            <b-row class="gameSession gameSessionBoxShadow" v-if="(userIDTrue && ((parseFloat(userBalancePlatform).toFixed(2) > 0) || (parseFloat(userBalanceGameSession).toFixed(2) > 0)))">
-                <b-col md="2" class="gameSessionBuyCollectContainer">
-                    <b-button class="gameSessionBuy gameSessionBuyCollect" size="lg" v-on:click="startGameSession" v-if="(!isGameSession) && (parseFloat(userBalancePlatform).toFixed(2) > 0)" :disabled="transferPending">
-                        <span>Buy</span>
-                    </b-button>
-                    <b-button class="gameSessionCollect gameSessionBuyCollect" size="lg" v-on:click="endGameSession" v-if="parseFloat(userBalanceGameSession).toFixed(2) > 0" :disabled="transferPending">
-                        <span>Collect</span>
-                    </b-button>
-                </b-col>
-                <b-col md="10" class="doubleUpGameContainerTMP">
-                    <div v-bind:class="{doubleUpGameTMP: true, gamesAvailable: !!(userBalanceGameSession > 0)}" :style='{ backgroundImage: "url(" + gamesBackgrounds("./doubleup_bg.png") + ")" }'>
-                        <h1>Double Up!</h1>
-                        <a v-if="userBalanceGameSession" onclick="window.open('./#/DoubleUp',
-                           'newwindow',
-                           'width=960, height=640,menubar=no,toolbar=no,location=no,directories=no,status=no,scrollbars=no,resizable=no');
-                          return false;">
-                        </a>
-                    </div>
-                </b-col>
-                <div class="inProgressBackground gameProgressSection" v-if="transferPendingBackground">
-                    <div class="inProgressContent" v-if="transferPending">
-                        <b-progress :value="confNum" :max="numberOfConfirmations + 1" show-progress animated></b-progress>
-                    </div>
-                </div>
-            </b-row>
+            <gamelobby
+              :componentVisible="(userIDTrue && ((parseFloat(userBalancePlatform).toFixed(2) > 0) || (parseFloat(userBalanceGameSession).toFixed(2) > 0)))"
+              :buyButtonVisible="(!isGameSession) && (parseFloat(userBalancePlatform).toFixed(2) > 0)"
+              :collectButtonVisible="parseFloat(userBalanceGameSession).toFixed(2) > 0"
+              :transferPending="transferPending"
+              :canPlayGame="!!(userBalanceGameSession > 0)"
+              :confNum="confNum"
+              :numberOfConfirmations="numberOfConfirmations"
+            >
+            </gamelobby>
         </b-container>
         <div class="footer">
         </div>
@@ -80,17 +60,15 @@
 <script>
   /* eslint-disable no-unused-vars,object-shorthand */
   import helper from '../utils/helper';
-  import gamesComp from './Games';
-  import navbar from '../utils/navbar';
-  import accountdata from './accountdata';
-  import transaction from './transaction';
-  import denomination from './denomination';
-
-  const gamesBackgrounds = require.context('../assets/games', true, /\.(png|jpe?g|gif|svg)(\?.*)?$/);
+  import navbar from '../components/navbar';
+  import accountdata from '../components/accountdata';
+  import transaction from '../components/transaction';
+  import denomination from '../components/denomination';
+  import gamelobby from '../components/gamelobby';
 
   export default {
     name: 'MainPage',
-    components: { gamesComp, navbar, denomination, accountdata, transaction },
+    components: { navbar, denomination, accountdata, transaction, gamelobby },
     data() {
       return {
         userID: helper.methods.getUserID(),
@@ -101,18 +79,15 @@
         isMetaMask: false,
         gameSession: true,
         isGameSession: false,
-        transferPendingBackground: false,
         transferPending: false,
-        transferTokensPendingBackground: false,
-        transferTokensPending: false,
         confNum: 0,
         numberOfConfirmations: helper.data.config.numberOfConfirmations,
-        gamesBackgrounds,
         loginPopup: false,
         progressBarAnimationInterval: {},
         tranasctionMinedTxHash: null,
         transferBalanceInProgress: false,
-        currentDenominationId: 0
+        currentDenominationId: 0,
+        initApp: true
       };
     },
     mounted() {
@@ -121,6 +96,8 @@
         if (helper.methods.getUserIDStatus()) {
           this.setUserID_req(this.userID);
           this.isSessionOpen();
+        } else {
+          this.loginPopup = true;
         }
       }, 1000);
       helper.data.bus.$on('latestBlock_RES', (event) => {
@@ -148,7 +125,6 @@
         this.confNum = parseInt(event + 1, 10);
         if (this.confNum >= this.numberOfConfirmations + 1) {
           this.transferPending = false;
-          this.transferPendingBackground = false;
           this.getBalance();
           this.isSessionOpen();
           this.confNum = 0;
@@ -212,16 +188,6 @@
       loginWithMetaMask() {
         this.setUserID_req(window.web3.eth.coinbase);
         this.userID = window.web3.eth.coinbase;
-      },
-      // ............................ Game Session functions ...............
-      startGameSession() {
-        this.transferPendingBackground = true;
-        helper.methods.sendRequest('startGameSession');
-        this.gameSession = true;
-      },
-      endGameSession() {
-        this.transferPendingBackground = true;
-        helper.methods.sendRequest('endGameSession');
       },
 
       // ............................ Utils ................................

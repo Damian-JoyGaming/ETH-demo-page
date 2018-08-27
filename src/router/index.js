@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Debug from '@/components/Debug';
-import MainPage from '@/components/MainPage';
+import Debug from '@/containers/Debug';
+import MainPage from '@/containers/MainPage';
 import DoubleUpGame from '@/games/DoubleUp';
 
 Vue.use(Router);

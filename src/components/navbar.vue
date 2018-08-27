@@ -28,7 +28,7 @@
 </template>
 
 <script>
-  import helper from './helper';
+  import helper from '../utils/helper';
 
   export default {
     name: 'navbar',
