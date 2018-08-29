@@ -6,11 +6,11 @@
         <b-card no-body>
           <b-tabs pills card>
             <b-tab :disabled="depositTabDisabled" title="Deposit Tokens" button-id="depositButton">
-              <b-form-input v-model="tokensToSendDeposit" type="text" placeholder="Deposit" class="inputTextDeposit"></b-form-input>
+              <b-form-input v-model="tokensToSendDeposit" type="number" placeholder="Deposit" class="inputTextDeposit"></b-form-input>
               <b-btn v-on:click="!transferBalanceInProgress && sendTokensToCasino(currentDenominationId)" class="makeDepositButton">Deposit</b-btn>
             </b-tab>
             <b-tab :disabled="withdrawalTabDisabled" title="Withdrawal Tokens" button-id="withdrawalButton">
-              <b-form-input v-model="tokensToSendWithdrawal" type="text" placeholder="Withdrawal" class="withdrawalTextDeposit"></b-form-input>
+              <b-form-input v-model="tokensToSendWithdrawal" type="number" placeholder="Withdrawal" class="withdrawalTextDeposit"></b-form-input>
               <b-btn v-on:click="!transferBalanceInProgress && sendTokensFromCasino(currentDenominationId)" class="makeWithdrawalButton">Withdrawal</b-btn>
             </b-tab>
           </b-tabs>

@@ -100,6 +100,14 @@ ws.onmessage = function (event) {
   }
 };
 
+ws.onopen = () => {
+  bus.$emit('websocketConnected', true);
+};
+
+ws.onclose = () => {
+  bus.$emit('websocketDisconnected', true);
+};
+
 export default {
   data: {
     bus,

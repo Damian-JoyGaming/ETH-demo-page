@@ -5,17 +5,8 @@
 </template>
 
 <script>
-  import * as Cookies from 'tiny-cookie';
-  import helper from './utils/helper';
-
   export default {
-    name: 'app',
-    beforeCreate() {
-      // Check if cookie exist (if yes set UserID from it)
-      if (Cookies.get('JoyCoinUserId')) {
-        helper.methods.setUserID(Cookies.get('JoyCoinUserId'));
-      }
-    }
+    name: 'app'
   };
 </script>
 
