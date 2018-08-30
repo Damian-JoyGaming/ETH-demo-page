@@ -1,6 +1,10 @@
 <template>
     <div class="MainPage">
-        <navbar></navbar>
+        <navbar
+          :connectionStatus="connectionStatus"
+          :isLoggedIn="userIDTrue"
+        >
+        </navbar>
         <b-container class="mainContainer">
             <b-row>
                 <b-col v-if="userIDTrue" class="set-user">
@@ -43,16 +47,12 @@
         <div class="footer">
         </div>
         <denomination></denomination>
-        <div class="loginPopup" v-if="loginPopup">
-            <div class="loginContent">
-                <h3>Login with</h3>
-                <div class="metaMaskImage">
-                    <a class="metaMaskLogin" v-on:click="loginWithMetaMask"></a>
-                </div>
-                <b-form-input v-model="userID" type="text" placeholder="ID" :disabled="userIDTrue == 1"></b-form-input>
-                <b-button variant="primary" v-on:click="setUserID_req(userID)" id="setUserID" v-if="!userIDTrue">Set User ID</b-button>
-            </div>
-        </div>
+        <login
+          :isLoggedIn="userIDTrue"
+          :loginPopup="loginPopup"
+        >
+        </login>
+      <div class="loadingApp" v-if="loadingApp"></div>
     </div>
 </template>
 
@@ -65,10 +65,14 @@
   import transaction from '../components/transaction';
   import denomination from '../components/denomination';
   import gamelobby from '../components/gamelobby';
+  import login from '../components/login';
+  import * as Cookies from 'tiny-cookie';
+
+  let tmpUserId = null;
 
   export default {
     name: 'MainPage',
-    components: { navbar, denomination, accountdata, transaction, gamelobby },
+    components: { navbar, denomination, accountdata, transaction, gamelobby, login },
     data() {
       return {
         userID: helper.methods.getUserID(),
@@ -87,25 +91,28 @@
         tranasctionMinedTxHash: null,
         transferBalanceInProgress: false,
         currentDenominationId: 0,
-        initApp: true
+        loadingApp: true,
+        connectionStatus:false
       };
     },
     mounted() {
       // Run this functions 1s after open the page
-      setTimeout(() => {
-        if (helper.methods.getUserIDStatus()) {
-          this.setUserID_req(this.userID);
+      helper.data.bus.$on('latestBlock_RES', (event) => {
+        console.log(event);
+      });
+      helper.data.bus.$on('setUserID_RES', (event) => {
+        if (event) {
+          this.userID = tmpUserId;
+          tmpUserId = null;
+          this.userIDTrue = true;
+          this.getBalance(this.userID);
+          helper.methods.setUserID(this.userID);
+          this.loginPopup = false;
           this.isSessionOpen();
         } else {
           this.loginPopup = true;
         }
-      }, 1000);
-      helper.data.bus.$on('latestBlock_RES', (event) => {
-        console.log(event);
-      });
-      helper.data.bus.$on('setUserID_RES', () => {
-        this.isSessionOpen();
-        this.userIDTrue = true;
+        this.loadingApp = false;
       });
       helper.data.bus.$on('getBalance_RES', (event) => {
         if (event.location === 'world') {
@@ -155,10 +162,25 @@
         this.currentDenominationId = event;
       });
 
+      helper.data.bus.$on('websocketConnected', (event) => {
+        this.connectionStatus = true;
+        this.loginVerification();
+      });
+
+      helper.data.bus.$on('websocketDisconnected', (event) => {
+        this.connectionStatus = false;
+
+      });
+
+      helper.data.bus.$on('doLogin', (event) => {
+        this.setUserID_req(event);
+      });
+
 
       if (typeof window.web3 !== 'undefined') {
         this.isMetaMask = true;
       }
+
     },
     destroyed() {
       helper.data.bus.$off('latestBlock_RES');
@@ -171,23 +193,25 @@
       helper.data.bus.$off('tranasctionMinedTxHash');
       helper.data.bus.$off('balanceTransferInProcess');
       helper.data.bus.$off('changeCurrentDenominationId');
+      helper.data.bus.$off('websocketConnected');
+      helper.data.bus.$off('doLogin');
     },
     methods: {
       // ............................ User functions (ID, Balances) ........
       setUserID_req(userID) {
+        this.loadingApp = true;
+        tmpUserId = userID;
         helper.methods.sendRequestCommand('setUserID_req', userID);
-        this.getBalance(userID);
-        helper.methods.setUserID(userID);
-        this.loginPopup = false;
       },
       getBalance(userID = this.userID) {
+        this.transferBalanceInProgress = true;
         helper.methods.sendRequestCommand('getBalance', { getBalanceId: userID, getBalanceCurrency: 'JoyToken', location: 'world' });
         helper.methods.sendRequestCommand('getBalance', { getBalanceId: userID, getBalanceCurrency: 'JoyToken', location: 'platform' });
         helper.methods.sendRequestCommand('getBalance', { getBalanceId: userID, getBalanceCurrency: 'JoyToken', location: 'gameSession' });
       },
       loginWithMetaMask() {
-        this.setUserID_req(window.web3.eth.coinbase);
-        this.userID = window.web3.eth.coinbase;
+        tmpUserId = window.web3.eth.coinbase;
+        this.setUserID_req(tmpUserId);
       },
 
       // ............................ Utils ................................
@@ -208,6 +232,16 @@
 
       getTransactionsHistoryUrl() {
         return `https://ropsten.etherscan.io/address/${this.userID}`;
+      },
+
+      loginVerification() {
+        const JoyCoinUserId = Cookies.get('JoyCoinUserId');
+        if (JoyCoinUserId) {
+          this.setUserID_req(JoyCoinUserId);
+        } else {
+          this.loadingApp = false;
+          this.loginPopup = true;
+        }
       }
     }
   };
