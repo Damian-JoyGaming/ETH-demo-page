@@ -6,6 +6,7 @@
 
 <script>
   import helper from '../utils/helper';
+  import * as Cookies from 'tiny-cookie';
 
   export default {
     name: 'DoubleUp',
@@ -17,7 +18,8 @@
     },
     beforeMount() {
       this.doubleUpData = helper.methods.getGamesParameters();
-      this.doubleUpURL = `http://192.168.1.24/DoubleUp/master/?userId=${this.doubleUpData.userID}&currency=${this.doubleUpData.tokenName}&port=${this.doubleUpData.doubleUpPort}&server=${this.doubleUpData.doubleUpServer}`;
+      this.doubleUpData.userID = Cookies.get('JoyCoinUserId');
+      this.doubleUpURL = `${this.doubleUpData.clientServer}?userId=${this.doubleUpData.userID}&currency=${this.doubleUpData.tokenName}&port=${this.doubleUpData.doubleUpPort}&server=${this.doubleUpData.doubleUpServer}`;
     }
   };
 </script>

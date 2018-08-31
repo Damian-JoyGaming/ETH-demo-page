@@ -106,6 +106,7 @@ ws.onopen = () => {
 
 ws.onclose = () => {
   bus.$emit('websocketDisconnected', true);
+  location.reload();
 };
 
 export default {
@@ -238,7 +239,8 @@ export default {
         userID: this.userID,
         tokenName: config.tokenName,
         doubleUpPort: config.doubleUpPort,
-        doubleUpServer: config.doubleUpServer
+        doubleUpServer: config.doubleUpServer,
+        clientServer: config.clientServer
       };
     },
     // ............................ Setters/Getters .................
