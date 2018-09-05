@@ -26,8 +26,8 @@
       };
     },
     methods: {
-      loginWithMetaMask() {
-        const userId = window.web3.eth.coinbase;
+      async loginWithMetaMask() {
+        const userId = await window.web3.eth.getCoinbase();
         this.setUserID_req(userId);
       },
       setUserID_req(userId) {

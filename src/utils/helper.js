@@ -154,7 +154,7 @@ export default {
     // Transfer tokens to casino (userID, number of tokens to send)
     transferToCasino(userID, tokensToSend) {
       const transfer = async () => {
-        const response = await web3TokenContractTransfer(globalDepositAddress, globalTokenAddress, tokensToSend);
+        const response = await web3TokenContractTransfer(globalDepositAddress, globalTokenAddress, tokensToSend, userID);
         this.transactionResponsePreparation(response);
       };
 
