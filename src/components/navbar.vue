@@ -15,9 +15,9 @@
                <!-- Right aligned nav items -->
                <b-nav is-nav-bar class="ml-auto">
                    <b-nav-item to="/debug" class="debug-url" v-if="false">Debug</b-nav-item>
+                   <b-nav-item class="subscriptionButton" v-on:click="subscriptionButtonHandler">Buy Dev  Subscription</b-nav-item>
                    <b-nav-item class="logoutButton" v-if="isLoggedIn" v-on:click="logOut">Logout</b-nav-item>
                    <b-nav-item class="logoutButton" v-else v-on:click="login">Login</b-nav-item>
-                   <b-nav-item class="joinButton">Join</b-nav-item>
                </b-nav>
 
            </b-collapse>
@@ -56,6 +56,20 @@
       },
       login() {
         helper.data.bus.$emit('loginPopup', true);
+      },
+      subscriptionButtonHandler() {
+        const popupData = {
+          visible: true,
+          title: 'Developer Subscription',
+          message: 'Would you like to buy developer subscription for 1 month ?',
+          action1: {title: 'Submit', visible: true, type: 'success', callback: () => {
+            helper.data.bus.$emit('notificationPopup', {visible: false});
+          }},
+          action2: {title: 'Reject', visible: true, type: 'danger', callback: () => {
+            helper.data.bus.$emit('notificationPopup', {visible: false});
+          }}
+        };
+        helper.data.bus.$emit('notificationPopup', popupData);
       }
     }
   };

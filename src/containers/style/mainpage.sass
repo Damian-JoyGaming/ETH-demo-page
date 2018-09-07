@@ -15,6 +15,17 @@ $secondary-darkPurple: #0d163a
   background: url($src) center
   background-size: cover
 
+=notificationBackground()
+  position: absolute
+  top: 0
+  left: 0
+  width: 100vw
+  height: 100vh
+  background-color: rgba(255,255,255,0.6)
+  display: flex
+  justify-content: center
+  align-items: center
+
 =orangeButton()
   padding-right: 10px
   padding-left: 10px
@@ -307,16 +318,38 @@ $secondary-darkPurple: #0d163a
     background-position: center center
     background-repeat: no-repeat
     vertical-align: middle
+.notificationPopup
+  +notificationBackground()
+  .notificationTitle
+    margin: 0
+  .notificationContent
+    display: flex
+    flex-direction: column
+    justify-content: space-between
+    width: 50vw
+    height: 30vh
+    border: 1px solid
+    border-radius: 10px
+    padding: 20px
+    background-color: #ffffff
+    border-color: #ff9800
+    webkit-box-shadow: 3px -1px 20px -1px rgba(158,158,158,1)
+    -moz-box-shadow: 3px -1px 20px -1px rgba(158,158,158,1)
+    box-shadow: 3px -1px 20px -1px rgba(158,158,158,1)
+    .notificationMessage
+      align-self: center
+    .notificationActionButton
+      display: flex
+      justify-content: center
+      .notificationAction
+        width: 46%
+    .notificationActionButtons
+      display: flex
+      justify-content: space-between
+      .notificationAction
+        width: 46%
 .loginPopup
-  position: absolute
-  top: 0
-  left: 0
-  width: 100vw
-  height: 100vh
-  background-color: rgba(255,255,255,0.6)
-  display: flex
-  justify-content: center
-  align-items: center
+  +notificationBackground()
   .metaMaskImage
     position: relative
     background-image: url('../../assets/metamask.png')

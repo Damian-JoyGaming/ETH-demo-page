@@ -209,7 +209,7 @@ export default {
         return false;
       }
 
-      const blockUpdatesResult = await web3WaitForBlocksChanged(config.numberOfConfirmations);
+      const blockUpdatesResult = await web3WaitForBlocksChanged(blockNumber, config.numberOfConfirmations);
       if (blockUpdatesResult) {
         const transactionReceipt = await web3GetTransactionReceipt(transactionHash);
         const {blockHash:blockHashReceipt, blockNumber:blockNumberReceipt, status:statusReceipt} = transactionReceipt;

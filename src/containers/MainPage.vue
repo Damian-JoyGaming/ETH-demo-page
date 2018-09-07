@@ -47,6 +47,7 @@
         <div class="footer">
         </div>
         <denomination></denomination>
+        <notification></notification>
         <login
           :isLoggedIn="userIDTrue"
           :loginPopup="loginPopup"
@@ -66,13 +67,14 @@
   import denomination from '../components/denomination';
   import gamelobby from '../components/gamelobby';
   import login from '../components/login';
+  import notification from '../components/notification';
   import * as Cookies from 'tiny-cookie';
 
   let tmpUserId = null;
 
   export default {
     name: 'MainPage',
-    components: { navbar, denomination, accountdata, transaction, gamelobby, login },
+    components: { navbar, denomination, accountdata, transaction, gamelobby, login, notification },
     data() {
       return {
         userID: helper.methods.getUserID(),
@@ -175,7 +177,6 @@
       helper.data.bus.$on('doLogin', (event) => {
         this.setUserID_req(event);
       });
-
 
       if (typeof window.web3 !== 'undefined') {
         this.isMetaMask = true;
