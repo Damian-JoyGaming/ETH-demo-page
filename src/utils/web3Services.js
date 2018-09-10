@@ -29,7 +29,7 @@ function web3GetBlockNumber() {
   });
 }
 
-export function web3TokenContractTransferOLD(depositAddress, tokenAddress, tokensToSend, userId) {
+export function web3TokenContractTransfer(depositAddress, tokenAddress, tokensToSend, userId) {
   return new Promise(async (resolve, reject) => {
 
     const contract = await getTokenContract(tokenAddress);
@@ -88,22 +88,22 @@ export async function web3WaitForBlocksChanged(blockId, blocksAmount = 5) {
     }(this));
   });
 }
-
-export function web3TokenContractTransfer(depositAddress, tokenAddress, tokensToSend, userId) {
-  return new Promise(async (resolve, reject) => {
-console.log('web3TokenContractTransfer!!!!!!!!!');
-    const contract = await getTokenContract(tokenAddress);
-    contract.methods.transfer(depositAddress, tokensToSend).send({from: userId}).once('transactionHash', (response) => {
-      console.info('transactionHash', response);
-      resolve(response);
-    }).on('confirmation', (confNumber, receipt) => {
-      console.info('confirmation', confNumber, receipt);
-    }).on('receipt', (receipt) => {
-      console.info('receipt', receipt);
-    }).on('error', (rerror) => {
-      reject(rerror);
-    }).then((res) => {
-      console.log(res);
-    });
-  });
-}
+//
+// export function web3TokenContractTransfer(depositAddress, tokenAddress, tokensToSend, userId) {
+//   return new Promise(async (resolve, reject) => {
+// console.log('web3TokenContractTransfer!!!!!!!!!');
+//     const contract = await getTokenContract(tokenAddress);
+//     contract.methods.transfer(depositAddress, tokensToSend).send({from: userId}).once('transactionHash', (response) => {
+//       console.info('transactionHash', response);
+//       resolve(response);
+//     }).on('confirmation', (confNumber, receipt) => {
+//       console.info('confirmation', confNumber, receipt);
+//     }).on('receipt', (receipt) => {
+//       console.info('receipt', receipt);
+//     }).on('error', (rerror) => {
+//       reject(rerror);
+//     }).then((res) => {
+//       console.log(res);
+//     });
+//   });
+// }
