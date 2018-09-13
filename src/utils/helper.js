@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import * as Cookies from 'tiny-cookie';
-import {web3WaitForBlocksChanged, web3TokenContractTransfer, web3DepositContractPayOut, web3GetTransactionReceipt} from './web3Services';
+import {web3WaitForBlocksChanged, web3TokenContractTransfer, web3DepositContractPayOut, web3GetTransactionReceipt, web3GetSubscriptionPrice, web3BuyDeveloperSubscription} from './web3Services';
 import config from './utils-config.json';
 
 // let ws = new WebSocket('ws://192.168.1.207:8010/platform');
@@ -13,8 +13,10 @@ const bus = new Vue();
 let globalUserID = '';
 let globalDepositAddress = '';
 let globalTokenAddress = '';
+let globalSubscriptionAddress = '';
 let lastTransactionId = '';
 let transactionStatusTimerId = null;
+let subscriptionPrice = 0;
 const actionsTransferList = [];
 
 // Create listiner at websocket to get messages
@@ -36,7 +38,7 @@ ws.onmessage = function (event) {
         bus.$emit('latestBlock_RES', parsedEvent.data);
         break;
       // If user ID is set - after it emit true to component and set a cookie with userID
-      case 'setUserID_RES':
+      case 'setUserId_RES':
         if (parsedEvent.status === 0) {
           bus.$emit('setUserID_RES', true);
           Cookies.set('JoyCoinUserId', globalUserID, 1);
@@ -90,6 +92,17 @@ ws.onmessage = function (event) {
           bus.$emit('confNum', parsedEvent.confNum);
         }
         break;
+      case 'getUserExpired_RES':
+        if (parsedEvent.status === 0) {
+          bus.$emit('getUserExpired', parsedEvent);
+        }
+        break;
+      case 'getSubscriptionAddress_RES':
+        if (parsedEvent.status === 0) {
+          globalSubscriptionAddress = parsedEvent.data;
+          bus.$emit('subscriptionAddress', parsedEvent);
+        }
+        break;
       default:
         console.log('Not such command');
     }
@@ -133,11 +146,17 @@ export default {
         case 'getBalance':
           sendString = `{ "command": "${command}", "user": "${requested.getBalanceId}", "unit" : "${requested.getBalanceCurrency}", "location": "${requested.location}" }`;
           break;
-        case 'setUserID_req':
-          sendString = `{ "command": "${command}", "userID": "${requested}" }`;
+        case 'setUserId':
+          sendString = `{ "command": "${command}", "userId": "${requested}" }`;
           break;
         case 'isSessionOpen':
           sendString = `{ "command": "${command}", "location": "${requested}" }`;
+          break;
+        case 'getUserExpired':
+          sendString = `{ "command": "${command}", "unit": "XXX" }`;
+          break;
+        case 'getSubscriptionAddress':
+          sendString = `{ "command": "${command}"}`;
           break;
         default:
           break;
@@ -224,7 +243,18 @@ export default {
           bus.$emit('balanceTransferInProcess', false);
         }
       }
+    },
 
+    async getSubscriptionPrice() {
+      const price = await web3GetSubscriptionPrice(globalSubscriptionAddress);
+      subscriptionPrice = price;
+      bus.$emit('subscriptionPrice', price);
+    },
+
+    async buyDeveloperSubscription() {
+      const response = await web3BuyDeveloperSubscription(globalSubscriptionAddress, globalUserID, subscriptionPrice);
+      this.transactionResponsePreparation(response);
+      bus.$emit('pendingSubscription');
     },
     // ............................ Utils ...........................
     // Logout function - remove cookie and reloading a page
@@ -245,7 +275,7 @@ export default {
     },
     // ............................ Setters/Getters .................
     // Setter of userID (from MainPage component, without cookie) -
-    // set User ID and emit setUserID to components
+    // set User ID and emit ssetUserIDetUserID to components
     setUserID(userID) {
       this.userID = userID;
       globalUserID = userID;
@@ -283,6 +313,19 @@ function* generateTransfersActions() {
     }
   }
 }
+
+// function* generateSubscriptionActions() {
+//   if (!globalSubscriptionAddress) {
+//     yield this.sendRequest('getSubscriptionAddress');
+//   }
+//
+//   if (globalSubscriptionAddress) {
+//     while (actionsTransferList.length) {
+//       yield actionsTransferList.shift();
+//     }
+//   }
+//
+// }
 
 function executeAllTransferActions() {
   const generetedActions = generateTransfersActions();

@@ -10,7 +10,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import App from './App';
 import router from './router';
-var Web3Local = require('web3');
+import Web3Local from 'web3';
 
 Vue.config.productionTip = false;
 
@@ -25,12 +25,7 @@ Vue.use(VueCookie);
 
 
   (function() {
-    if (typeof window.web3 !== 'undefined') {
-      window.web3 = new Web3Local(window.web3.currentProvider);
-    } else {
-      const web3Provider = new Web3Local.providers.HttpProvider('https://infuranet.infura.io');
-      window.web3 = new Web3Local(web3Provider);
-    }
+      window.web3 = new Web3Local(window.web3.currentProvider || Web3Local.givenProvider);
   }(window));
 
   new Vue({

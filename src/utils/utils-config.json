@@ -1,5 +1,5 @@
 {
-  "serverURL": "ws://35.153.30.160:50000/platform",
+  "serverURL": "ws://192.168.1.84:38010/platform",
   "doubleUpPort": "60000",
   "doubleUpServer": "52.22.73.191",
   "tokenName": "JoyToken",

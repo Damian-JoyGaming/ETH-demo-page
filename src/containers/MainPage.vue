@@ -3,6 +3,7 @@
         <navbar
           :connectionStatus="connectionStatus"
           :isLoggedIn="userIDTrue"
+          :loadingApp="loadingApp"
         >
         </navbar>
         <b-container class="mainContainer">
@@ -156,6 +157,7 @@
       helper.data.bus.$on('balanceTransferInProcess', (event) => {
         if (!event) {
           this.getBalance();
+          helper.data.bus.$emit('checkUserSubscription', false);
         } else {
           this.transferBalanceInProgress = event;
         }
@@ -202,7 +204,7 @@
       setUserID_req(userID) {
         this.loadingApp = true;
         tmpUserId = userID;
-        helper.methods.sendRequestCommand('setUserID_req', userID);
+        helper.methods.sendRequestCommand('setUserId', userID);
       },
       getBalance(userID = this.userID) {
         this.transferBalanceInProgress = true;

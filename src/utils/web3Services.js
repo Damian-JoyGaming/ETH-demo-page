@@ -1,21 +1,12 @@
 import contractConfig from './config.json';
 
-async function getTokenContract(tokenAddress) {
+async function getContract(type, address) {
   if (typeof window.web3 !== 'undefined') {
-    const CONTRACT = await new window.web3.eth.Contract(contractConfig.JoyToken.abi, tokenAddress);
+    const CONTRACT = await new window.web3.eth.Contract(contractConfig[type].abi, address);
 
     return CONTRACT;
   }
 }
-
-async function getDepositContract(depositAddress) {
-  if (typeof window.web3 !== 'undefined') {
-    const CONTRACT = await new window.web3.eth.Contract(contractConfig.PlatformDeposit.abi, depositAddress);
-
-    return CONTRACT;
-  }
-}
-
 
 function web3GetBlockNumber() {
   return new Promise((resolve, reject) => {
@@ -32,7 +23,7 @@ function web3GetBlockNumber() {
 export function web3TokenContractTransfer(depositAddress, tokenAddress, tokensToSend, userId) {
   return new Promise(async (resolve, reject) => {
 
-    const contract = await getTokenContract(tokenAddress);
+    const contract = await getContract('JoyToken', tokenAddress);
     contract.methods.transfer(depositAddress, tokensToSend).send({from: userId}).once('transactionHash', (response) => {
       resolve(response);
     }).on('confirmation', (confNumber, receipt) => {
@@ -48,7 +39,7 @@ export function web3TokenContractTransfer(depositAddress, tokenAddress, tokensTo
 
 export function web3DepositContractPayOut(depositAddress, userID, tokensToSend) {
   return new Promise(async (resolve, reject) => {
-    const contract = await getDepositContract(depositAddress);
+    const contract = await getContract('PlatformDeposit', depositAddress);
     contract.methods.payOut(userID, tokensToSend).send({from: userID}).one('transactionHash', (response) => {
       resolve(response);
     }).on('receipt', (confNumber, receipt) => {
@@ -86,6 +77,30 @@ export async function web3WaitForBlocksChanged(blockId, blocksAmount = 5) {
         }
       }, 5000);
     }(this));
+  });
+}
+
+export async function web3GetSubscriptionPrice(subscriptionAddress) {
+  return new Promise(async (resolve) => {
+    const contract = await getContract('Subscription', subscriptionAddress);
+    const price = await contract.methods.subscriptionPrice().call();
+    resolve(price);
+  });
+}
+
+export async function web3BuyDeveloperSubscription(subscriptionAddress, userId, price) {
+  return new Promise(async (resolve, reject) => {
+    const contract = await getContract('Subscription', subscriptionAddress);
+    contract.methods.subscribe().send({from: userId, value: price}).once('transactionHash', (response) => {
+      resolve(response);
+    }).on('confirmation', (confNumber, receipt) => {
+      console.log(confNumber);
+      console.log(receipt);
+    }).on('error', (rerror) => {
+      reject(rerror);
+    }).then((res) => {
+      console.log(res);
+    });
   });
 }
 //
