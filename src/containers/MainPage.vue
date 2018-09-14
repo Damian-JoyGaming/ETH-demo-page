@@ -4,6 +4,7 @@
           :connectionStatus="connectionStatus"
           :isLoggedIn="userIDTrue"
           :loadingApp="loadingApp"
+          @checkSubscription="developerSection"
         >
         </navbar>
         <b-container class="mainContainer">
@@ -33,6 +34,12 @@
                   :currentDenominationId="currentDenominationId"
                 >
                 </transaction>
+            </b-row>
+            <b-row class="developerContainer" v-if="showDeveloperSection">
+              <developer
+
+              >
+              </developer>
             </b-row>
             <gamelobby
               :componentVisible="(userIDTrue && ((parseFloat(userBalancePlatform).toFixed(2) > 0) || (parseFloat(userBalanceGameSession).toFixed(2) > 0)))"
@@ -69,13 +76,14 @@
   import gamelobby from '../components/gamelobby';
   import login from '../components/login';
   import notification from '../components/notification';
+  import developer from '../components/developer';
   import * as Cookies from 'tiny-cookie';
 
   let tmpUserId = null;
 
   export default {
     name: 'MainPage',
-    components: { navbar, denomination, accountdata, transaction, gamelobby, login, notification },
+    components: { navbar, denomination, accountdata, transaction, gamelobby, login, notification, developer },
     data() {
       return {
         userID: helper.methods.getUserID(),
@@ -95,7 +103,8 @@
         transferBalanceInProgress: false,
         currentDenominationId: 0,
         loadingApp: true,
-        connectionStatus:false
+        connectionStatus:false,
+        showDeveloperSection: false
       };
     },
     mounted() {
@@ -245,6 +254,10 @@
           this.loadingApp = false;
           this.loginPopup = true;
         }
+      },
+
+      developerSection(show) {
+        this.showDeveloperSection = show;
       }
     }
   };

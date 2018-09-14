@@ -153,7 +153,7 @@ export default {
           sendString = `{ "command": "${command}", "location": "${requested}" }`;
           break;
         case 'getUserExpired':
-          sendString = `{ "command": "${command}", "unit": "XXX" }`;
+          sendString = `{ "command": "${command}", "unit": "dbg" }`;
           break;
         case 'getSubscriptionAddress':
           sendString = `{ "command": "${command}"}`;

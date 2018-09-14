@@ -43,12 +43,20 @@
         reconnectButton: false,
         developmentSubscription: {
           price: -1,
-          expired: -1,
+          expired: 0,
           infoMessage: 'Checking Subscription...'
         }
       };
     },
+    watch: {
+
+        developmentSubscription: function (val) {
+          this.$emit('checkSubscription', !!val.expired);
+        }
+
+    },
     mounted() {
+
       helper.data.bus.$on('getUserExpired', ({expired_sec}) => {
         this.developmentSubscription = Object.assign({}, this.developmentSubscription, {
           expired: expired_sec,
