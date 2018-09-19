@@ -28,7 +28,7 @@
       }
     },
     created() {
-      this.testGameServerUrl = config.serverURL;
+      this.testGameServerUrl = config.developerServerUrl;
       this.developerApiDocumentUrl = config.developerApiDocumentUrl;
     }
   };

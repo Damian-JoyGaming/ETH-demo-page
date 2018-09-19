@@ -6,5 +6,6 @@
   "numberOfConfirmations": 5,
   "userBalanceGameSessionDenomination": 100,
   "clientServer": "http://192.168.1.24/DoubleUp/master",
-  "developerApiDocumentUrl": "./static/GameDeveloper_API_v1.docx"
+  "developerApiDocumentUrl": "./static/GameDeveloper_API_v1.docx",
+  "developerServerUrl": "ws://192.168.1.93:38961"
 }
