@@ -28,7 +28,7 @@
     methods: {
       async loginWithMetaMask() {
         const userId = await window.web3.eth.getCoinbase();
-        this.setUserID_req(userId);
+        this.setUserID_req(window.web3.utils.toChecksumAddress(userId));
       },
       setUserID_req(userId) {
         helper.data.bus.$emit('doLogin', userId);

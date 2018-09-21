@@ -37,7 +37,7 @@
             </b-row>
             <b-row class="developerContainer" v-if="showDeveloperSection">
               <developer
-
+                :userID="userID"
               >
               </developer>
             </b-row>
