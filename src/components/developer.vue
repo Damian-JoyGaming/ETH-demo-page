@@ -1,7 +1,13 @@
 <template>
   <b-col class="developer" md="12">
     <h5>DEVELOPER INFORMATION:</h5>
-
+    <b-alert :show="dismissCountDown"
+             dismissible
+             variant="info"
+             @dismissed="dismissCountDown=0"
+             @dismiss-count-down="countDownChanged">
+      <p>Copied</p>
+    </b-alert>
     <p>Test Game Server Url: <span @click="copyToClipboard('gameServerUrlElement')" ref="gameServerUrlElement">{{testGameServerUrl}}</span></p>
     <p>UserID for Login: <span @click="copyToClipboard('userIDDevElement')" ref="userIDDevElement">{{userID}}</span></p>
     <p>Developer API Documentation: <b-btn class="downloadDevBtn" variant="info" @click="downloadApiDocumentation()">Download</b-btn></p>
@@ -20,7 +26,9 @@
     data() {
       return {
         testGameServerUrl: '',
-        developerApiDocumentUrl: ''
+        developerApiDocumentUrl: '',
+        dismissSecs: 3,
+        dismissCountDown: 0
       };
     },
     methods: {
@@ -28,6 +36,7 @@
         window.open(this.developerApiDocumentUrl);
       },
       copyToClipboard(el) {
+        this.dismissCountDown = this.dismissSecs;
         const range = window.getSelection().getRangeAt(0);
 
         range.selectNode(this.$refs[el]);
@@ -38,6 +47,9 @@
         }
 
         document.execCommand('copy');
+      },
+      countDownChanged (dismissCountDown) {
+        this.dismissCountDown = dismissCountDown;
       }
     },
     created() {
