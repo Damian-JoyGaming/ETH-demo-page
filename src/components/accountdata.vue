@@ -34,7 +34,7 @@
         const denominatedBalance = (Number(balance) / decimal).toString();
         let stringBalance = denominatedBalance;
 
-        if (~denominatedBalance.indexOf('e')) {
+        if (~denominatedBalance.indexOf('e-')) {
           const [balance, amountZero] = denominatedBalance.split('e-');
           stringBalance = '0.';
 
@@ -43,6 +43,13 @@
           }
 
           stringBalance += balance.replace('.', '');
+        } else if (~denominatedBalance.indexOf('e+')) {
+          const [balance, amountZero] = denominatedBalance.split('e+');
+
+          stringBalance = balance.replace('.', '');
+          for (let i = 0; i < amountZero - 1; i++) {
+            stringBalance += '0';
+          }
         }
 
         if (stringBalance.indexOf('0.') === 0) {
