@@ -31,35 +31,37 @@
     methods: {
       denominateBalance(balance, currentDenominationId) {
         const {decimal} = getDenominatedDataById(currentDenominationId);
-        const denominatedBalance = (Number(balance) / decimal).toString();
-        let stringBalance = denominatedBalance;
+        let denominatedBalance = balance;
 
-        if (~denominatedBalance.indexOf('e-')) {
-          const [balance, amountZero] = denominatedBalance.split('e-');
-          stringBalance = '0.';
-
-          for (let i = 0; i < amountZero - 1; i++) {
-            stringBalance += '0';
+        if (decimal && balance.length > decimal) {
+          const first = balance.slice(0, balance.length - decimal);
+          const second = balance.slice(balance.length - decimal, balance.length);
+          denominatedBalance = first;
+          if (second > 0) {
+            denominatedBalance += '.' + second;
           }
+        } else if (decimal) {
+          denominatedBalance = (Number(balance) / Math.pow(10,decimal)).toString();
+          if (~denominatedBalance.indexOf('e-')) {
+            const [bal, amountZero] = denominatedBalance.split('e-');
+            denominatedBalance = '0.';
 
-          stringBalance += balance.replace('.', '');
-        } else if (~denominatedBalance.indexOf('e+')) {
-          const [balance, amountZero] = denominatedBalance.split('e+');
+            for (let i = 0; i < amountZero - 1; i++) {
+              denominatedBalance += '0';
+            }
 
-          stringBalance = balance.replace('.', '');
-          for (let i = 0; i < amountZero - 1; i++) {
-            stringBalance += '0';
+            denominatedBalance += Number(bal).toString().replace('.', '');
           }
         }
 
-        if (stringBalance.indexOf('0.') === 0) {
-          const [first, second] = stringBalance.split('.');
-          stringBalance = first + '.' + second.replace(/(\d{3})/g, '$1 ').trim();
+        if (~denominatedBalance.indexOf('.')) {
+          const [first, second] = denominatedBalance.split('.');
+          denominatedBalance = first.replace(/(\d)(?=(\d{3})+$)/g, '$1 ') + '.' + second.replace(/(\d{3})/g, '$1 ').trim();
         } else {
-          stringBalance = stringBalance.replace(/(\d)(?=(\d{3})+$)/g, '$1 ');
+          denominatedBalance = denominatedBalance.replace(/(\d)(?=(\d{3})+$)/g, '$1 ');
         }
 
-        return stringBalance;
+        return denominatedBalance;
       },
       isActiveDenominationControl(controlId, currentDenominationId) {
         return getDenominatedDataById(currentDenominationId)[controlId];
