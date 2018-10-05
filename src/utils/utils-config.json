@@ -1,11 +1,11 @@
 {
-  "serverURL": "ws://35.153.30.160:50000/platform",
-  "doubleUpPort": "60000",
-  "doubleUpServer": "52.22.73.191",
+  "serverURL": "ws://0.0.0.0:8010/platform",
+  "doubleUpPort": "38961",
+  "doubleUpServer": "192.168.1.93",
   "tokenName": "JoyToken",
   "numberOfConfirmations": 5,
   "userBalanceGameSessionDenomination": 100,
-  "clientServer": "http://35.153.30.160/doubleUp",
+  "clientServer": "http://192.168.1.24/DoubleUp/master",
   "developerApiDocumentUrl": "./static/GameDeveloper_API_v1.docx",
-  "developerServerUrl": "ws://52.22.73.191:3390"
+  "developerServerUrl": "ws://192.168.1.93:38961"
 }

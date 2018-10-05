@@ -57,13 +57,13 @@
     methods: {
       sendTokensToCasino(currentDenominationId) {
         const {decimal} = getDenominatedDataById(currentDenominationId);
-        console.log('sendTokensToCasino', this.tokensToSendDeposit * decimal);
-        helper.methods.transferToCasino(this.userID, this.tokensToSendDeposit * decimal);
+        console.log('sendTokensToCasino', this.tokensToSendDeposit * Math.pow(10,decimal));
+        helper.methods.transferToCasino(this.userID, this.tokensToSendDeposit * Math.pow(10,decimal));
       },
       sendTokensFromCasino(currentDenominationId) {
         const {decimal} = getDenominatedDataById(currentDenominationId);
-        console.log('sendTokensFromCasino', this.tokensToSendWithdrawal * decimal);
-        helper.methods.transferFromCasino(this.userID, this.tokensToSendWithdrawal * decimal);
+        console.log('sendTokensFromCasino', this.tokensToSendWithdrawal * Math.pow(10,decimal));
+        helper.methods.transferFromCasino(this.userID, this.tokensToSendWithdrawal * Math.pow(10,decimal));
       },
       getLastTransactionStatusUrl() {
         return `https://ropsten.etherscan.io/tx/${this.tranasctionMinedTxHash}`;
