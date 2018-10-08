@@ -11,6 +11,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 import App from './App';
 import router from './router';
 import Web3Local from 'web3';
+import _ from 'lodash';
 
 Vue.config.productionTip = false;
 
@@ -20,12 +21,15 @@ Vue.use(VueAxios, axios);
 
 Vue.use(VueCookie);
 
+
 (function() {
 
-
-
   (function() {
-      window.web3 = new Web3Local(window.web3.currentProvider || Web3Local.givenProvider);
+      window.isMetaMaskPlugin = false;
+      if (_.get(window, 'web3')) {
+        window.isMetaMaskPlugin = true;
+      }
+      window.web3 = new Web3Local(_.get(window.web3, 'currentProvider', Web3Local.givenProvider));
   }(window));
 
   new Vue({

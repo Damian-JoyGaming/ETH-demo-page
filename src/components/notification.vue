@@ -24,8 +24,8 @@
         visible: false,
         title: '',
         message: '',
-        action1: {title: '', visible: true, type: 'info', callback: () => {}},
-        action2: {title: '', visible: true, type: 'info', callback: () => {}}
+        action1: {title: '', visible: false, type: 'info', callback: () => {}},
+        action2: {title: '', visible: false, type: 'info', callback: () => {}}
       };
     },
     created() {
@@ -51,8 +51,8 @@
         this.visible = visible || false;
         this.title = title || '';
         this.message = message || '';
-        this.action1 = action1 || {title: '', visible: true, type: 'info', callback: () => {}};
-        this.action2 = action2 || {title: '', visible: true, type: 'info', callback: () => {}};
+        this.action1 = action1 || {title: '', visible: false, type: 'info', callback: () => {}};
+        this.action2 = action2 || {title: '', visible: false, type: 'info', callback: () => {}};
       }
     }
   };

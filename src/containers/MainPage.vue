@@ -177,20 +177,38 @@
 
       helper.data.bus.$on('websocketConnected', (event) => {
         this.connectionStatus = true;
-        this.loginVerification();
+        if (this.isMetaMask) {
+          this.loginVerification();
+        }
       });
 
       helper.data.bus.$on('websocketDisconnected', (event) => {
         this.connectionStatus = false;
-
+        this.loadingApp = false;
       });
 
       helper.data.bus.$on('doLogin', (event) => {
         this.setUserID_req(event);
       });
 
-      if (typeof window.web3 !== 'undefined') {
+      if (window.isMetaMaskPlugin) {
         this.isMetaMask = true;
+      } else {
+        this.loadingApp = false;
+      }
+
+    },
+    updated() {
+      if (!window.isMetaMaskPlugin) {
+        const popupData = {
+          visible: true,
+          title: 'Important information',
+          message: 'Please install MetaMask plugin for entering to the system',
+          action1: {title: 'Download', visible: true, type: 'info', callback: () => {
+            window.open('https://metamask.io/');
+          }}
+        };
+        helper.data.bus.$emit('notificationPopup', popupData);
       }
 
     },

@@ -3,11 +3,10 @@ import * as Cookies from 'tiny-cookie';
 import {web3WaitForBlocksChanged, web3TokenContractTransfer, web3DepositContractPayOut, web3GetTransactionReceipt, web3GetSubscriptionPrice, web3BuyDeveloperSubscription} from './web3Services';
 import config from './utils-config.json';
 
-// let ws = new WebSocket('ws://192.168.1.207:8010/platform');
-let ws = new WebSocket(config.serverURL);
-
 // Create bus to comunicate between components
 const bus = new Vue();
+// let ws = new WebSocket('ws://192.168.1.207:8010/platform');
+let ws = new WebSocket(config.serverURL);
 
 // Global variables (in this file)
 let globalUserID = '';
@@ -119,7 +118,16 @@ ws.onopen = () => {
 
 ws.onclose = () => {
   bus.$emit('websocketDisconnected', true);
-  location.reload();
+  const popupData = {
+    visible: true,
+    title: 'Connection lost!',
+    message: 'Sorry. Looks like you have connection problems. Try to reload page.',
+    action1: {title: 'Reload Page', visible: true, type: 'info', callback: () => {
+        location.reload();
+      }}
+  };
+  bus.$emit('notificationPopup', popupData);
+  // location.reload();
 };
 
 export default {
