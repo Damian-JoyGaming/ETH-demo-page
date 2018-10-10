@@ -40,7 +40,7 @@ export function web3TokenContractTransfer(depositAddress, tokenAddress, tokensTo
 export function web3DepositContractPayOut(depositAddress, userID, tokensToSend) {
   return new Promise(async (resolve, reject) => {
     const contract = await getContract('PlatformDeposit', depositAddress);
-    contract.methods.payOut(userID, tokensToSend).send({from: userID}).one('transactionHash', (response) => {
+    contract.methods.payOut(userID, tokensToSend).send({from: userID}).once('transactionHash', (response) => {
       resolve(response);
     }).on('receipt', (confNumber, receipt) => {
       console.log('confirmation');
