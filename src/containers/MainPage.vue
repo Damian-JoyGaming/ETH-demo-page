@@ -10,7 +10,7 @@
         <b-container class="mainContainer">
             <b-row>
                 <b-col v-if="userIDTrue" class="set-user">
-                    <span>ETH Account number: {{ userID }}</span>
+                  <span>ETH Account number: <span class="user-id">{{ userID }}</span></span>
                     <span><a v-bind:href="getTransactionsHistoryUrl()" target="_blank">Transactions History</a></span>
                 </b-col>
             </b-row>
@@ -167,6 +167,7 @@
         if (!event) {
           this.getBalance();
           helper.data.bus.$emit('checkUserSubscription', false);
+          helper.data.bus.$emit('clearTransactionForm', true);
         } else {
           this.transferBalanceInProgress = event;
         }

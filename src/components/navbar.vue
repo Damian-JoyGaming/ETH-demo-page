@@ -29,6 +29,8 @@
 
 <script>
   import helper from '../utils/helper';
+  import moment from 'moment';
+
   let subscriptionAddressRequest = false;
 
   export default {
@@ -58,9 +60,13 @@
     mounted() {
 
       helper.data.bus.$on('getUserExpired', ({expired_sec}) => {
+        let date = null;
+        if (expired_sec > 0) {
+          date = moment.utc(new Date(Date.now() + 1000 * expired_sec).getTime()).format('DD-MM-YYYY');
+        }
         this.developmentSubscription = Object.assign({}, this.developmentSubscription, {
           expired: expired_sec,
-          infoMessage: expired_sec > 0 ? `Experation date: ${new Date(Date.now() + 1000 * expired_sec).toLocaleDateString()}` : ''
+          infoMessage: expired_sec > 0 ? `Experation date: ${date}` : ''
         });
 
       });

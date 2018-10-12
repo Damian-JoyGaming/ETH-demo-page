@@ -54,6 +54,12 @@
         this.tokensToSendWithdrawal = '';
       }
     },
+    mounted() {
+      helper.data.bus.$on('clearTransactionForm', () => {
+        this.tokensToSendDeposit = '';
+        this.tokensToSendWithdrawal = '';
+      });
+    },
     methods: {
       sendTokensToCasino(currentDenominationId) {
         const {decimal} = getDenominatedDataById(currentDenominationId);
