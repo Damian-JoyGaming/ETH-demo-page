@@ -2,7 +2,8 @@
        <b-navbar toggleable="md" type="dark">
            <b-navbar-brand to="/">
                <img src="../assets/JoyToken_White.png" class="brand-image" alt="BV">
-               Home
+               <sup class="demo">DEMO</sup>
+               <span>Home</span>
            </b-navbar-brand>
            <b-nav-toggle target="nav_collapse"></b-nav-toggle>
            <b-collapse is-nav id="nav_collapse">
@@ -112,19 +113,19 @@
         helper.data.bus.$emit('loginPopup', true);
       },
       subscriptionButtonHandler() {
-        const popupData = {
-          visible: true,
-          title: 'Developer Subscription',
-          message: `Would you like to buy developer subscription for 1 month for ${this.developmentSubscription.price} Wei ?`,
-          action1: {title: 'Submit', visible: true, type: 'success', callback: () => {
-            helper.data.bus.$emit('notificationPopup', {visible: false});
-            helper.methods.buyDeveloperSubscription();
-          }},
-          action2: {title: 'Reject', visible: true, type: 'danger', callback: () => {
-            helper.data.bus.$emit('notificationPopup', {visible: false});
-          }}
-        };
-        helper.data.bus.$emit('notificationPopup', popupData);
+        // const popupData = {
+        //   visible: true,
+        //   title: 'Developer Subscription',
+        //   message: `Would you like to buy developer subscription for 1 month for ${this.developmentSubscription.price} Wei ?`,
+        //   action1: {title: 'Submit', visible: true, type: 'success', callback: () => {
+        //     helper.data.bus.$emit('notificationPopup', {visible: false});
+        //     helper.methods.buyDeveloperSubscription();
+        //   }},
+        //   action2: {title: 'Reject', visible: true, type: 'danger', callback: () => {
+        //     helper.data.bus.$emit('notificationPopup', {visible: false});
+        //   }}
+        // };
+        helper.data.bus.$emit('openSubscriptionPopup', this.developmentSubscription.price);
       },
       checkUserSubscription() {
         this.developmentSubscription = Object.assign({}, this.developmentSubscription, {

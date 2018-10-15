@@ -1,9 +1,9 @@
 const baseDenominationObject = {previous: true, next: true, decimal:1};
-const denominationList = ['a', 'f', 'p', 'n', 'u', 'm', 'j', 'k', 'M'];
+const denominationList = /*'a', 'f',*/['p', 'n', 'u', 'm', 'j', 'k', 'M'];
 const denominationData = {
-  a: Object.assign({}, baseDenominationObject, {previous:false, 'shortName': 'a', 'name': 'atto', decimal:0}),
-  f: Object.assign({}, baseDenominationObject, {'shortName': 'f', 'name': 'femto', decimal: 3}),
-  p: Object.assign({}, baseDenominationObject, {'shortName': 'p', 'name': 'piko', decimal: 6}),
+  // a: Object.assign({}, baseDenominationObject, {previous:false, 'shortName': 'a', 'name': 'atto', decimal:0}),
+  // f: Object.assign({}, baseDenominationObject, {'shortName': 'f', 'name': 'femto', decimal: 3}),
+  p: Object.assign({}, baseDenominationObject, {previous:false, 'shortName': 'p', 'name': 'piko', decimal: 6}),
   n: Object.assign({}, baseDenominationObject, {'shortName': 'n', 'name': 'nano', decimal: 9}),
   u: Object.assign({}, baseDenominationObject, {'shortName': 'u', 'name': 'micro', decimal: 12}),
   m: Object.assign({}, baseDenominationObject, {'shortName': 'm', 'name': 'milli', decimal: 15}),

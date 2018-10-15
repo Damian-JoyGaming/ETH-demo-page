@@ -15,7 +15,6 @@ let globalTokenAddress = '';
 let globalSubscriptionAddress = '';
 let lastTransactionId = '';
 let transactionStatusTimerId = null;
-let subscriptionPrice = 0;
 const actionsTransferList = [];
 
 // Create listiner at websocket to get messages
@@ -255,11 +254,10 @@ export default {
 
     async getSubscriptionPrice() {
       const price = await web3GetSubscriptionPrice(globalSubscriptionAddress);
-      subscriptionPrice = price;
       bus.$emit('subscriptionPrice', price);
     },
 
-    async buyDeveloperSubscription() {
+    async buyDeveloperSubscription(subscriptionPrice) {
       const response = await web3BuyDeveloperSubscription(globalSubscriptionAddress, globalUserID, subscriptionPrice);
       this.transactionResponsePreparation(response);
       bus.$emit('pendingSubscription');

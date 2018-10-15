@@ -56,6 +56,7 @@
         </div>
         <denomination></denomination>
         <notification></notification>
+        <subscription></subscription>
         <login
           :isLoggedIn="userIDTrue"
           :loginPopup="loginPopup"
@@ -77,13 +78,14 @@
   import login from '../components/login';
   import notification from '../components/notification';
   import developer from '../components/developer';
+  import subscription from '../components/subscription';
   import * as Cookies from 'tiny-cookie';
 
   let tmpUserId = null;
 
   export default {
     name: 'MainPage',
-    components: { navbar, denomination, accountdata, transaction, gamelobby, login, notification, developer },
+    components: { navbar, denomination, accountdata, transaction, gamelobby, login, notification, developer, subscription },
     data() {
       return {
         userID: helper.methods.getUserID(),
