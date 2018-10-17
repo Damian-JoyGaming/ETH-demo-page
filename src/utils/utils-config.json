@@ -1,11 +1,13 @@
 {
-  "serverURL": "ws://0.0.0.0:8010/platform",
+  "serverURL": "ws://192.168.1.85:38000/platform",
   "doubleUpPort": "38961",
-  "doubleUpServer": "192.168.1.93",
+  "doubleUpServer": "192.168.1.124",
   "tokenName": "JoyToken",
   "numberOfConfirmations": 5,
   "userBalanceGameSessionDenomination": 100,
   "clientServer": "http://192.168.1.24/DoubleUp/master",
   "developerApiDocumentUrl": "./static/GameDeveloper_API_v1.docx",
+  "howToLoginDocumentUrl": "./static/MetaMask_login_v1_0.docx",
   "developerServerUrl": "ws://192.168.1.93:38961"
+
 }

@@ -80,8 +80,10 @@
   import developer from '../components/developer';
   import subscription from '../components/subscription';
   import * as Cookies from 'tiny-cookie';
+  import config from '../utils/utils-config.json';
 
   let tmpUserId = null;
+  const howToLoginDocumentUrl = config.howToLoginDocumentUrl;
 
   export default {
     name: 'MainPage',
@@ -207,9 +209,12 @@
           visible: true,
           title: 'Important information',
           message: 'Please install MetaMask plugin for entering to the system',
-          action1: {title: 'Download', visible: true, type: 'info', callback: () => {
+          action2: {title: 'Download', visible: true, type: 'info', callback: () => {
             window.open('https://metamask.io/');
-          }}
+          }},
+          action1: {title: 'How To Login', visible: true, type: 'info', callback: () => {
+              window.open(howToLoginDocumentUrl);
+            }}
         };
         helper.data.bus.$emit('notificationPopup', popupData);
       }
