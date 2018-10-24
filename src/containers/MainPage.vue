@@ -182,6 +182,7 @@
 
       helper.data.bus.$on('websocketConnected', (event) => {
         this.connectionStatus = true;
+        helper.methods.sendRequestCommand('getSubscriptionJoyTokenABI');
         if (this.isMetaMask) {
           this.loginVerification();
         }

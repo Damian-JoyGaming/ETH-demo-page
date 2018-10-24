@@ -82,16 +82,16 @@ export async function web3WaitForBlocksChanged(blockId, blocksAmount = 5) {
 
 export async function web3GetSubscriptionPrice(subscriptionAddress) {
   return new Promise(async (resolve) => {
-    const contract = await getContract('Subscription', subscriptionAddress);
+    const contract = await getContract('SubscriptionWithEther', subscriptionAddress);
     const price = await contract.methods.subscriptionPrice().call();
     resolve(price);
   });
 }
 
-export async function web3BuyDeveloperSubscription(subscriptionAddress, userId, price) {
+export async function web3BuyDeveloperSubscription(subscriptionAddress, userId, price, seconds) {
   return new Promise(async (resolve, reject) => {
-    const contract = await getContract('Subscription', subscriptionAddress);
-    contract.methods.subscribe().send({from: userId, value: price}).once('transactionHash', (response) => {
+    const contract = await getContract('SubscriptionWithEther', subscriptionAddress);
+    contract.methods.subscribe(seconds).send({from: userId, value: price}).once('transactionHash', (response) => {
       resolve(response);
     }).on('confirmation', (confNumber, receipt) => {
       console.log(confNumber);

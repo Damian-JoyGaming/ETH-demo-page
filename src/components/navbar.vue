@@ -16,7 +16,7 @@
                <!-- Right aligned nav items -->
                <b-navbar-nav class="ml-auto" v-if="isLoggedIn">
                    <b-nav-item to="/debug" class="debug-url" v-if="false">Debug</b-nav-item>
-                   <b-nav-item v-if="!developmentSubscription.infoMessage" class="subscriptionButton" v-on:click="subscriptionButtonHandler">Buy Dev  Subscription</b-nav-item>
+                   <b-nav-item v-if="!developmentSubscription.infoMessage" class="subscriptionButton" v-on:click="subscriptionButtonHandler">Buy Dev Subscription</b-nav-item>
                    <b-navbar-nav class="subscriptionInfo" v-if="developmentSubscription.infoMessage">
                      <b-nav-text>{{developmentSubscription.infoMessage}}</b-nav-text>
                    </b-navbar-nav>
@@ -62,12 +62,13 @@
 
       helper.data.bus.$on('getUserExpired', ({expired_sec}) => {
         let date = null;
+        expired_sec = 0;
         if (expired_sec > 0) {
           date = moment.utc(new Date(Date.now() + 1000 * expired_sec).getTime()).format('DD-MM-YYYY');
         }
         this.developmentSubscription = Object.assign({}, this.developmentSubscription, {
           expired: expired_sec,
-          infoMessage: expired_sec > 0 ? `Experation date: ${date}` : ''
+          infoMessage: expired_sec > 0 ? `Expiration date: ${date}` : ''
         });
 
       });
@@ -119,12 +120,14 @@
         //   message: `Would you like to buy developer subscription for 1 month for ${this.developmentSubscription.price} Wei ?`,
         //   action1: {title: 'Submit', visible: true, type: 'success', callback: () => {
         //     helper.data.bus.$emit('notificationPopup', {visible: false});
-        //     helper.methods.buyDeveloperSubscription();
+        //     helper.methods.buyDeveloperSubscription(this.developmentSubscription.price);
         //   }},
         //   action2: {title: 'Reject', visible: true, type: 'danger', callback: () => {
         //     helper.data.bus.$emit('notificationPopup', {visible: false});
         //   }}
         // };
+        //
+        // helper.data.bus.$emit('notificationPopup', popupData);
         helper.data.bus.$emit('openSubscriptionPopup', this.developmentSubscription.price);
       },
       checkUserSubscription() {
@@ -139,7 +142,7 @@
           this.developmentSubscription = Object.assign({}, this.developmentSubscription, {
             infoMessage: 'Checking Subscription.'
           });
-          helper.methods.sendRequestCommand('getSubscriptionAddress');
+          helper.methods.sendRequestCommand('getSubscriptionEtherAddress');
         }
       },
       getSubscriptionPrice() {

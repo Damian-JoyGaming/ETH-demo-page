@@ -27,6 +27,7 @@
         action1: {title: 'Submit', visible: false, type: 'success', callback: this.Submit.bind(this)},
         action2: {title: 'Reject', visible: false, type: 'danger', callback: this.Reject.bind(this)},
         selected: '3600',
+        subscriptionPrice: 0,
         optionsTemplate: [
           { value: '3600', text: '1 hour' },
           { value: '21600', text: '6 hours' },
@@ -55,9 +56,10 @@
     },
     methods: {
       updatePlans(price) {
+        this.subscriptionPrice = price;
         this.options.length = 0;
         this.optionsTemplate.forEach((option) => {
-          const text = `${option.text} for ${price * option.value} Wei`;
+          const text = `${option.text} for ${option.value * price / Math.pow(10, 9)} GWei`;
           this.options.push(Object.assign({}, option, {text}));
         });
       },
@@ -67,7 +69,7 @@
       },
 
       Submit() {
-        helper.methods.buyDeveloperSubscription(this.selected);
+        helper.methods.buyDeveloperSubscription(this.subscriptionPrice * this.selected, this.selected);
         this.visible = false;
       }
     }

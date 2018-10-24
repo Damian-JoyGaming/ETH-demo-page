@@ -95,7 +95,7 @@ ws.onmessage = function (event) {
           bus.$emit('getUserExpired', parsedEvent);
         }
         break;
-      case 'getSubscriptionAddress_RES':
+      case 'getSubscriptionEtherAddress_RES':
         if (parsedEvent.status === 0) {
           globalSubscriptionAddress = parsedEvent.data;
           bus.$emit('subscriptionAddress', parsedEvent);
@@ -162,8 +162,11 @@ export default {
         case 'getUserExpired':
           sendString = `{ "command": "${command}", "unit": "dbg" }`;
           break;
-        case 'getSubscriptionAddress':
+        case 'getSubscriptionEtherAddress':
           sendString = `{ "command": "${command}"}`;
+          break;
+        case 'getSubscriptionJoyTokenABI':
+          sendString = `{"command": "${command}"}`;
           break;
         default:
           break;
@@ -257,8 +260,9 @@ export default {
       bus.$emit('subscriptionPrice', price);
     },
 
-    async buyDeveloperSubscription(subscriptionPrice) {
-      const response = await web3BuyDeveloperSubscription(globalSubscriptionAddress, globalUserID, subscriptionPrice);
+    async buyDeveloperSubscription(subscriptionPrice, seconds) {
+      console.log('subscriptionPrice', subscriptionPrice, seconds);
+      const response = await web3BuyDeveloperSubscription(globalSubscriptionAddress, globalUserID, subscriptionPrice, seconds);
       this.transactionResponsePreparation(response);
       bus.$emit('pendingSubscription');
     },
