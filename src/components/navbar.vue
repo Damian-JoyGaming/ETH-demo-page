@@ -62,7 +62,7 @@
 
       helper.data.bus.$on('getUserExpired', ({expired_sec}) => {
         let date = null;
-        expired_sec = 0;
+        
         if (expired_sec > 0) {
           date = moment.utc(new Date(Date.now() + 1000 * expired_sec).getTime()).format('DD-MM-YYYY');
         }
