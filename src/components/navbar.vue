@@ -16,6 +16,10 @@
                <!-- Right aligned nav items -->
                <b-navbar-nav class="ml-auto" v-if="isLoggedIn">
                    <b-nav-item to="/debug" class="debug-url" v-if="false">Debug</b-nav-item>
+                   <b-nav-item v-if="topUpTokenBtn" class="topUpTokensButton" v-on:click="buyTokens">Get Test Tokens</b-nav-item>
+                   <b-navbar-nav v-if="!topUpTokenBtn"  class="subscriptionInfo">
+                     <b-nav-text>Getting Tokens...</b-nav-text>
+                   </b-navbar-nav>
                    <b-nav-item v-if="!developmentSubscription.infoMessage" class="subscriptionButton" v-on:click="subscriptionButtonHandler">Buy Dev Subscription</b-nav-item>
                    <b-navbar-nav class="subscriptionInfo" v-if="developmentSubscription.infoMessage">
                      <b-nav-text>{{developmentSubscription.infoMessage}}</b-nav-text>
@@ -48,7 +52,8 @@
           price: -1,
           expired: 0,
           infoMessage: 'Checking Subscription...'
-        }
+        },
+        topUpTokenBtn: true
       };
     },
     watch: {
@@ -62,7 +67,7 @@
 
       helper.data.bus.$on('getUserExpired', ({expired_sec}) => {
         let date = null;
-        
+
         if (expired_sec > 0) {
           date = moment.utc(new Date(Date.now() + 1000 * expired_sec).getTime()).format('DD-MM-YYYY');
         }
@@ -129,6 +134,9 @@
         //
         // helper.data.bus.$emit('notificationPopup', popupData);
         helper.data.bus.$emit('openSubscriptionPopup', this.developmentSubscription.price);
+      },
+      buyTokens() {
+        helper.methods.sendRequestCommand('topUpTokens');
       },
       checkUserSubscription() {
         this.developmentSubscription = Object.assign({}, this.developmentSubscription, {

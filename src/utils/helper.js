@@ -168,6 +168,9 @@ export default {
         case 'getSubscriptionJoyTokenABI':
           sendString = `{"command": "${command}"}`;
           break;
+        case 'topUpTokens':
+          sendString = `{"command": "${command}", "unit":"JoyToken"}`;
+          break;
         default:
           break;
       }
