@@ -103,6 +103,16 @@ export async function web3BuyDeveloperSubscription(subscriptionAddress, userId, 
     });
   });
 }
+
+export async function web3GetTokenDecimals(tokenAddress) {
+  const contract = await getContract('JoyToken', tokenAddress);
+  return new Promise((resolve) => {
+      contract.methods.decimals().call()
+      .then((result) => {
+        resolve(result);
+      });
+  });
+}
 //
 // export function web3TokenContractTransfer(depositAddress, tokenAddress, tokensToSend, userId) {
 //   return new Promise(async (resolve, reject) => {

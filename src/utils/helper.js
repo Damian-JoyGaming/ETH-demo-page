@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import * as Cookies from 'tiny-cookie';
-import {web3WaitForBlocksChanged, web3TokenContractTransfer, web3DepositContractPayOut, web3GetTransactionReceipt, web3GetSubscriptionPrice, web3BuyDeveloperSubscription} from './web3Services';
+import {web3WaitForBlocksChanged, web3TokenContractTransfer, web3DepositContractPayOut, web3GetTransactionReceipt, web3GetSubscriptionPrice, web3BuyDeveloperSubscription, web3GetTokenDecimals} from './web3Services';
 import config from './utils-config.json';
 
 // Create bus to comunicate between components
@@ -29,6 +29,7 @@ ws.onmessage = function (event) {
     switch (parsedEvent.command) {
       // Get balance of selected token (and emit it to components)
       case 'getBalance_RES':
+        parsedEvent.balance = parsedEvent.balance * Math.pow(10, 8);
         bus.$emit('getBalance_RES', parsedEvent);
         break;
       // Get latest block from blockchain
@@ -306,6 +307,11 @@ export default {
     // Getter of Websocket status (true/false)
     getWSStatus() {
       return ws.readyState;
+    },
+
+    async getDecimals() {
+      const decimals = await web3GetTokenDecimals(globalTokenAddress);
+      console.log(decimals);
     }
   }
 };
