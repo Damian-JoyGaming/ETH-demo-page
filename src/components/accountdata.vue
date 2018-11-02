@@ -4,7 +4,7 @@
     <p>Wallet Balance: <span id="userBalanceWorld">{{ denominateBalance(userBalanceWorld, currentDenominationId) }} {{getDenominatedCurrency(currentDenominationId)}}</span></p>
     <p>Casino Balance: <span id="userBalancePlatform">{{ denominateBalance(userBalancePlatform, currentDenominationId) }} {{getDenominatedCurrency(currentDenominationId)}}</span></p>
     <p>Game Lobby Balance: <span id="userBalanceGameSession">{{ userBalanceGameSession }}</span></p>
-    <p>Exchange Rate: <span id="exchangeRateContainer">100 attoJoy = <span id="exchangeRateValue">1</span></span></p>
+    <p>Exchange Rate: <span id="exchangeRateContainer">10 nanoJoy = <span id="exchangeRateValue">1</span></span></p>
     <div class="denominationContainer"><span :class="{active: isActiveDenominationControl('previous', currentDenominationId)}" v-on:click="isActiveDenominationControl('previous', currentDenominationId) && changeCurrentDenominationId(-1, currentDenominationId)">{{getDenominationControlName('previous', currentDenominationId)}}</span> | <span :class="{active: isActiveDenominationControl('next', currentDenominationId)}" v-on:click="isActiveDenominationControl('next', currentDenominationId) && changeCurrentDenominationId(1, currentDenominationId)">{{getDenominationControlName('next', currentDenominationId)}}</span></div>
     <span v-if="transferBalanceInProgress" class="transactionInProgress">Updating balance</span>
   </b-col>

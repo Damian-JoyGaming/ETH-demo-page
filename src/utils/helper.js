@@ -88,7 +88,7 @@ ws.onmessage = function (event) {
         break;
       case 'confirmation_NOTIFY':
         if (parsedEvent.status === 0) {
-          bus.$emit('confNum', parsedEvent.confNum);
+          bus.$emit('confNum', parsedEvent);
         }
         break;
       case 'getUserExpired_RES':
@@ -100,6 +100,12 @@ ws.onmessage = function (event) {
         if (parsedEvent.status === 0) {
           globalSubscriptionAddress = parsedEvent.data;
           bus.$emit('subscriptionAddress', parsedEvent);
+        }
+        break;
+      case 'pendingToken_NOTIFY':
+        if (parsedEvent.status === 0) {
+          bus.$emit('tranasctionMinedTxHash', parsedEvent.txHash);
+          lastTransactionId = parsedEvent.txHash;
         }
         break;
       default:

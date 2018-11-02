@@ -144,13 +144,17 @@
       helper.data.bus.$on('isSessionOpen_RES', (event) => {
         this.isGameSession = event;
       });
-      helper.data.bus.$on('confNum', (event) => {
-        this.confNum = parseInt(event + 1, 10);
+      helper.data.bus.$on('confNum', ({confNum, topic}) => {
+        this.confNum = parseInt(confNum + 1, 10);
         if (this.confNum >= this.numberOfConfirmations + 1) {
           this.transferPending = false;
           this.getBalance();
           this.isSessionOpen();
           this.confNum = 0;
+          helper.data.bus.$emit('balanceTransferInProcess', false);
+          if (topic === 'tokenTransfer') {
+            helper.data.bus.$emit('pendedTopUp', true);
+          }
           clearInterval(this.progressBarAnimationInterval);
         }
       });

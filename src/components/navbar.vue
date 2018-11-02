@@ -97,6 +97,11 @@
         });
       });
 
+      helper.data.bus.$on('pendedTopUp', (isPended) => {
+        this.topUpTokenBtn = isPended;
+      });
+
+
     },
     destroyed() {
 
@@ -136,6 +141,8 @@
         helper.data.bus.$emit('openSubscriptionPopup', this.developmentSubscription.price);
       },
       buyTokens() {
+        this.topUpTokenBtn = false;
+        helper.data.bus.$emit('balanceTransferInProcess', true);
         helper.methods.sendRequestCommand('topUpTokens');
       },
       checkUserSubscription() {
