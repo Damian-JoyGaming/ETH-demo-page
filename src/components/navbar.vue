@@ -17,13 +17,9 @@
                <b-navbar-nav class="ml-auto" v-if="isLoggedIn">
                    <b-nav-item to="/debug" class="debug-url" v-if="false">Debug</b-nav-item>
                    <b-nav-item v-if="topUpTokenBtn" class="topUpTokensButton" v-on:click="buyTokens">Get Test Tokens</b-nav-item>
-                   <b-navbar-nav v-if="!topUpTokenBtn"  class="subscriptionInfo">
-                     <b-nav-text>Getting Tokens...</b-nav-text>
-                   </b-navbar-nav>
+                   <b-nav-text v-if="!topUpTokenBtn" class="subscriptionInfo">Getting Tokens...</b-nav-text>
                    <b-nav-item v-if="!developmentSubscription.infoMessage" class="subscriptionButton" v-on:click="subscriptionButtonHandler">Buy Dev Subscription</b-nav-item>
-                   <b-navbar-nav class="subscriptionInfo" v-if="developmentSubscription.infoMessage">
-                     <b-nav-text>{{developmentSubscription.infoMessage}}</b-nav-text>
-                   </b-navbar-nav>
+                   <b-nav-text class="subscriptionInfo" v-if="developmentSubscription.infoMessage">{{developmentSubscription.infoMessage}}</b-nav-text>
                    <b-nav-item class="logoutButton" v-if="isLoggedIn" v-on:click="logOut">Logout</b-nav-item>
                    <b-nav-item class="logoutButton" v-else v-on:click="login">Login</b-nav-item>
                </b-navbar-nav>
