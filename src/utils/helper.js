@@ -1,6 +1,15 @@
 import Vue from 'vue';
 import * as Cookies from 'tiny-cookie';
-import {web3WaitForBlocksChanged, web3TokenContractTransfer, web3DepositContractPayOut, web3GetTransactionReceipt, web3GetSubscriptionPrice, web3BuyDeveloperSubscription, web3GetTokenDecimals} from './web3Services';
+import {
+  web3WaitForBlocksChanged,
+  web3TokenContractTransfer,
+  web3DepositContractPayOut,
+  web3GetTransactionReceipt,
+  web3GetSubscriptionPrice,
+  web3BuyDeveloperSubscription,
+  web3GetTokenDecimals,
+  web3CheckIfUserIsLoggedIn
+} from './web3Services';
 import config from './utils-config.json';
 
 // Create bus to comunicate between components
@@ -193,7 +202,8 @@ export default {
     // Transfer tokens to casino (userID, number of tokens to send)
     transferToCasino(userID, tokensToSend) {
       const transfer = async () => {
-        const response = await web3TokenContractTransfer(globalDepositAddress, globalTokenAddress, tokensToSend, userID);
+        await web3CheckIfUserIsLoggedIn(web3ErroNotification);
+        const response = await web3TokenContractTransfer(globalDepositAddress, globalTokenAddress, tokensToSend, userID, web3ErroNotification);
         this.transactionResponsePreparation(response);
       };
 
@@ -203,7 +213,8 @@ export default {
 
     transferFromCasino(userID, tokensToSend) {
       const transfer = async () => {
-        const response = await web3DepositContractPayOut(globalDepositAddress, userID, tokensToSend);
+        await web3CheckIfUserIsLoggedIn(web3ErroNotification);
+        const response = await web3DepositContractPayOut(globalDepositAddress, userID, tokensToSend, web3ErroNotification);
         this.transactionResponsePreparation(response);
       };
 
@@ -271,8 +282,9 @@ export default {
     },
 
     async buyDeveloperSubscription(subscriptionPrice, seconds) {
+      await web3CheckIfUserIsLoggedIn(web3ErroNotification);
       console.log('subscriptionPrice', subscriptionPrice, seconds);
-      const response = await web3BuyDeveloperSubscription(globalSubscriptionAddress, globalUserID, subscriptionPrice, seconds);
+      const response = await web3BuyDeveloperSubscription(globalSubscriptionAddress, globalUserID, subscriptionPrice, seconds, web3ErroNotification);
       this.transactionResponsePreparation(response);
       bus.$emit('pendingSubscription');
     },
@@ -360,4 +372,18 @@ function executeAllTransferActions() {
       action();
     }
   }
+}
+
+function web3ErroNotification({title, message, action1, action2}) {
+  const popupData = {
+    visible: true,
+    title,
+    message,
+    action1: action1 ? action1 : {title: 'Close', visible: true, type: 'info', callback: () => {
+        bus.$emit('notificationPopup', {visible: false});
+      }},
+    action2
+  };
+
+  bus.$emit('notificationPopup', popupData);
 }

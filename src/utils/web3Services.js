@@ -1,5 +1,8 @@
 import contractConfig from './config.json';
 
+const INCORRECT_USER_ID_ERROR = 'unable to sign transaction for this address';
+const USER_DENIED_TRANSACTION_SIGNATURE = 'User denied transaction signature';
+
 async function getContract(type, address) {
   if (typeof window.web3 !== 'undefined') {
     const CONTRACT = await new window.web3.eth.Contract(contractConfig[type].abi, address);
@@ -20,7 +23,7 @@ function web3GetBlockNumber() {
   });
 }
 
-export function web3TokenContractTransfer(depositAddress, tokenAddress, tokensToSend, userId) {
+export function web3TokenContractTransfer(depositAddress, tokenAddress, tokensToSend, userId, errorCallback) {
   return new Promise(async (resolve, reject) => {
 
     const contract = await getContract('JoyToken', tokenAddress);
@@ -29,15 +32,18 @@ export function web3TokenContractTransfer(depositAddress, tokenAddress, tokensTo
     }).on('confirmation', (confNumber, receipt) => {
       console.log(confNumber);
       console.log(receipt);
-    }).on('error', (rerror) => {
-      reject(rerror);
+    }).on('error', (error) => {
+      if (errorCallback && !~error.message.indexOf(USER_DENIED_TRANSACTION_SIGNATURE)) {
+        errorCallback(getErrorMessage(error));
+      }
+      reject(error);
     }).then((res) => {
       console.log(res);
     });
   });
 }
 
-export function web3DepositContractPayOut(depositAddress, userID, tokensToSend) {
+export function web3DepositContractPayOut(depositAddress, userID, tokensToSend, errorCallback) {
   return new Promise(async (resolve, reject) => {
     const contract = await getContract('PlatformDeposit', depositAddress);
     contract.methods.payOut(userID, tokensToSend).send({from: userID}).once('transactionHash', (response) => {
@@ -46,8 +52,11 @@ export function web3DepositContractPayOut(depositAddress, userID, tokensToSend) 
       console.log('confirmation');
       console.log(confNumber);
       console.log(receipt);
-    }).on('error', (rerror) => {
-      reject(rerror);
+    }).on('error', (error) => {
+      if (errorCallback && !~error.message.indexOf(USER_DENIED_TRANSACTION_SIGNATURE)) {
+        errorCallback(getErrorMessage(error));
+      }
+      reject(error);
     });
   });
 }
@@ -88,7 +97,7 @@ export async function web3GetSubscriptionPrice(subscriptionAddress) {
   });
 }
 
-export async function web3BuyDeveloperSubscription(subscriptionAddress, userId, price, seconds) {
+export async function web3BuyDeveloperSubscription(subscriptionAddress, userId, price, seconds, errorCallback) {
   return new Promise(async (resolve, reject) => {
     const contract = await getContract('SubscriptionWithEther', subscriptionAddress);
     contract.methods.subscribe(seconds).send({from: userId, value: price}).once('transactionHash', (response) => {
@@ -96,8 +105,11 @@ export async function web3BuyDeveloperSubscription(subscriptionAddress, userId, 
     }).on('confirmation', (confNumber, receipt) => {
       console.log(confNumber);
       console.log(receipt);
-    }).on('error', (rerror) => {
-      reject(rerror);
+    }).on('error', (error) => {
+      if (errorCallback && !~error.message.indexOf(USER_DENIED_TRANSACTION_SIGNATURE)) {
+        errorCallback(getErrorMessage(error));
+      }
+      reject(error);
     }).then((res) => {
       console.log(res);
     });
@@ -112,6 +124,32 @@ export async function web3GetTokenDecimals(tokenAddress) {
         resolve(result);
       });
   });
+}
+
+export function web3CheckIfUserIsLoggedIn(errorCallback) {
+  return new Promise((resolve, reject) => {
+    window.web3.eth.getAccounts((err, accounts) => {
+      if (err !== null || accounts.length === 0) {
+        if (errorCallback) {
+          const params = {
+            title: 'User is not authorized',
+            message: 'Please login to MetaMask for corresponding action'
+          };
+          errorCallback(params);
+        }
+        reject();
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
+function getErrorMessage({message}) {
+  return {
+    title: 'Sorry you can not complete transaction',
+    message: ~message.indexOf(INCORRECT_USER_ID_ERROR) ? 'Please check that you have same ETH Account number in MetaMask' : 'Something went wrong please try again'
+  };
 }
 //
 // export function web3TokenContractTransfer(depositAddress, tokenAddress, tokensToSend, userId) {
